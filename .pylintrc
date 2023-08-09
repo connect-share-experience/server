@@ -1,0 +1,9 @@
+[MASTER]
+
+load-plugins=pylint_pydantic
+
+extension-pkg-whitelist=pydantic
+
+[MESSAGES CONTROL]
+
+disable=fixme
