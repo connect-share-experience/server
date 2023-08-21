@@ -103,4 +103,3 @@ class AuthSettings(_BaseAppSettings):
     key: str = Field(..., env="SECRET_KEY")
     algo: str = Field(..., env="ALGORITHM")
     token_exp: int = Field(..., env="ACCESS_TOKEN_EXPIRE_MINUTES")
-

@@ -96,7 +96,7 @@ class EventRead(_EventBaseStrict):
     id: int
 
 
-class Event(SQLModel, table=True):
+class Event(_EventBaseStrict, table=True):
     """Model for events in database.
 
     Attributes

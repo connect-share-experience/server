@@ -81,7 +81,7 @@ class FriendshipDao:
                      .where(Friendship.invite_sender_id == sender_id))
         friendship = self.session.exec(statement).one_or_none()
         if friendship is None:
-            raise HTTPException(status_code=401,
+            raise HTTPException(status_code=404,
                                 detail="Friendship not found.")
         return friendship
 
