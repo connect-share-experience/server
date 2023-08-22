@@ -55,7 +55,7 @@ def get_current_user(token: str = Header(...),
         if phone is None:
             raise credentials_exception
         auth_data = TokenData(phone=phone)
-    except JWTError as exc:
+    except JWTError as exc:  # TODO : validation error
         raise credentials_exception from exc
     user = UserService(session).read_user_by_phone(auth_data.phone)
     return user

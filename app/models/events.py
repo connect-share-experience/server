@@ -39,7 +39,7 @@ class _EventBase(SQLModel):
 class _EventBaseStrict(_EventBase):
     """Similar to _EventBase, but with stricter restrictions."""
     name: str = Field(max_length=100)
-    desc: str = Field(max_length=2000)
+    desc: str = Field(max_length=2000)  # optional
     category: EventCategory
     datetime: datetime
     capacity: int = Field(ge=2)

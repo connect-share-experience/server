@@ -17,6 +17,7 @@ class Tags(Enum):
     AUTH = "Authentication"
     USER = "User"
     FRIEND = "Friendship"
+    EVENT = "event"
 
 
 tags_metadata = [
@@ -31,6 +32,11 @@ tags_metadata = [
     {
         "name": Tags.FRIEND.value,
         "description": """Operations related to friendship creation,
+                          modification and deletion."""
+    }, 
+    {
+        "name": Tags.EVENT.value,
+        "description": """Operations related to event creation,
                           modification and deletion."""
     }
 ]
@@ -49,7 +55,7 @@ app.add_middleware(
     allow_credentials=False,
     allow_methods=['*'],
     allow_headers=['*']
-)
+)  # TODO : allow only clients to access the API and learn about it
 
 
 @app.on_event("startup")
@@ -57,7 +63,9 @@ def on_startup():
     """Actions to perform when starting the app."""
     create_db_and_tables()
 
+# TODO : redundancies oin shutdown (save the data)
 
 app.include_router(authentication_router.router, tags=[Tags.AUTH])
 app.include_router(user_router.router, tags=[Tags.USER])
 app.include_router(friendship_router.router, tags=[Tags.FRIEND])
+# app.include_router(event_router.router, tags=[Tags.EVENT])
