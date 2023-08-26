@@ -9,8 +9,12 @@ from typing import List
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models.locations import Location, LocationUpdate
-
+from app.models.locations import Location, LocationUpdate, LocationCreate, LocationReadApprox
+import random
+import math
+import googlemaps
+import os
+from dotenv import load_dotenv
 
 
 
@@ -50,7 +54,6 @@ class LocationDao:
         Location
             The created location.
         """
-
         self.session.add(location)
         self.session.commit()
         self.session.refresh(location)
@@ -76,13 +79,14 @@ class LocationDao:
         """
         location = self.session.get(Location, event_id)
         if location is None:
-            raise HTTPException(status_code=404,
-                                detail=f"Location associated to the event id {event_id} not found.")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Location linked to event id {event_id} not found.")
         return location
     
     
     # TODO : put that in service and not in dao
-        
+
     def read_locations(self, offset: int, limit: int) -> List[Location]:
         """Read all locations from offset to offset+limit in the table.
 

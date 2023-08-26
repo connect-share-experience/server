@@ -33,7 +33,7 @@ tags_metadata = [
         "name": Tags.FRIEND.value,
         "description": """Operations related to friendship creation,
                           modification and deletion."""
-    }, 
+    },
     {
         "name": Tags.EVENT.value,
         "description": """Operations related to event creation,
@@ -62,6 +62,7 @@ app.add_middleware(
 def on_startup():
     """Actions to perform when starting the app."""
     create_db_and_tables()
+
 
 # TODO : redundancies oin shutdown (save the data)
 
