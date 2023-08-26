@@ -9,11 +9,7 @@ from typing import List
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models.locations import Location, LocationUpdate, LocationCreate, LocationReadApprox
-
-
-
-
+from app.models.locations import Location, LocationUpdate
 
 
 class LocationDao:
@@ -80,8 +76,7 @@ class LocationDao:
                 status_code=404,
                 detail=f"Location linked to event id {event_id} not found.")
         return location
-    
-    
+
     # TODO : put that in service and not in dao
 
     def read_locations(self, offset: int, limit: int) -> List[Location]:
@@ -103,7 +98,9 @@ class LocationDao:
         locations = self.session.exec(statement).all()
         return locations
 
-    def update_location(self, event_id: int, new_location: LocationUpdate) -> Location:
+    def update_location(self,
+                        event_id: int,
+                        new_location: LocationUpdate) -> Location:
         """Update a location with chosen id with new location data.
 
         Parameters
@@ -125,8 +122,9 @@ class LocationDao:
         """
         old_location = self.session.get(Location, event_id)
         if not old_location:
-            raise HTTPException(status_code=404,
-                                detail=f"Location associated to the event id {event_id} not found.")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Location with event id {event_id} not found.")
         new_data = new_location.dict(exclude_unset=True)
         for key, value in new_data.items():
             setattr(old_location, key, value)
@@ -155,8 +153,9 @@ class LocationDao:
         """
         location = self.session.get(Location, event_id)
         if not location:
-            raise HTTPException(status_code=404,
-                                detail=f"Location associated to the event id {event_id} not found.")
+            raise HTTPException(
+                status_code=404,
+                detail=f"Location with event id {event_id} not found.")
         self.session.delete(location)
         self.session.commit()
         return location

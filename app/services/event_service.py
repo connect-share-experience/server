@@ -13,6 +13,7 @@ from app.dao.event_dao import EventDao
 from app.models.events import Event, EventUpdate
 from app.models.enums import EventCategory
 
+
 class EventService:
     """Intermediate services for events.
 
@@ -30,12 +31,12 @@ class EventService:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_event(self, 
-                     name : str,
-                     desc : str,
-                     category : EventCategory,
-                     datetime : datetime,
-                     capacity : int) -> Event:
+    def create_event(self,
+                     name: str,
+                     desc: str,
+                     category: EventCategory,
+                     datetime: datetime,
+                     capacity: int) -> Event:
         """Create a frienship in database.
 
         Parameters
@@ -48,18 +49,17 @@ class EventService:
         Event
             The event created.
         """
-        event = Event(name = name, 
-                        desc = desc,
-                        category = category,
-                        datetime = datetime,
-                        capacity = capacity)
+        event = Event(name=name,
+                      desc=desc,
+                      category=category,
+                      datetime=datetime,
+                      capacity=capacity)
         return EventDao(self.session).create_event(event)
 
-
     def update_event(self,
-                                 event_id: int,
-                                 new_event: EventUpdate) -> Event:
-        """Update a event status.
+                     event_id: int,
+                     new_event: EventUpdate) -> Event:
+        """Update an event status.
 
         Parameters
         ----------
@@ -73,11 +73,10 @@ class EventService:
         Event
             The updated event.
         """
-        return (EventDao(self.session)
-                .update_event(event_id, new_event))
+        return EventDao(self.session).update_event(event_id, new_event)
 
     def delete_event(self,
-                          event_id: int) -> Event:
+                     event_id: int) -> Event:
         """Delete a event.
 
         Parameters

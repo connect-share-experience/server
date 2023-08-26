@@ -5,24 +5,18 @@ Classes
 LocationService
     Intermediate services for locations.
 """
-from datetime import date
+import math
+import random
 
 from sqlmodel import Session
+import googlemaps
+
+from app.configs.settings import ExtResourcesSettings
 from app.dao.location_dao import LocationDao
 from app.models.locations import Location, LocationUpdate, LocationCreate
 
-import googlemaps
-import os
-from dotenv import load_dotenv
+gmaps = googlemaps.Client(key=ExtResourcesSettings().gmaps_key)
 
-import random
-import math
-
-load_dotenv(dotenv_path='./app/env')
-
-GoogleMapsKey = os.getenv('GoogleMapsKey')
-
-gmaps = googlemaps.Client(key=GoogleMapsKey)
 
 class LocationService:
     """Intermediate services for locations.
@@ -43,7 +37,7 @@ class LocationService:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_location(self, location : LocationCreate) -> Location:
+    def create_location(self, location: LocationCreate) -> Location:
         """Create a location in database.
 
         Parameters
@@ -57,90 +51,95 @@ class LocationService:
             The location created.
         """
         location = Location.parse_obj(location)
-        coordinates = gmaps.geocode(f'{location.num} {location.street}, {location.city}, {location.zipcode}')[0]['geometry']['location']
+        temp_coords = gmaps.geocode(f"{location.num} {location.street}, " +
+                                    f"{location.city}, {location.zipcode}")
+        coordinates = temp_coords[0]['geometry']['location']
         location.lat = coordinates['lat']
         location.lon = coordinates['lng']
         return LocationDao(self.session).create_location(location)
 
-    def read_location(self, event_id : int) -> Location:
+    def read_location(self, event_id: int) -> Location:
         """Read a location from database.
-        
+
         Parameters
         ----------
         event_id : int
             The id of the event to read.
-        
+
         Returns
         -------
         Location
             The location read.
         """
         return LocationDao(self.session).read_location(event_id)
-    
-    def read_location_approx(self, event_id : int) -> Location:
+
+    def read_location_approx(self, event_id: int) -> Location:
         '''Read a location from database.
-        
+
         Parameters
         ----------
         event_id : int
             The id of the event to read.
-            
+
         Returns
         -------
         Location
             The location read with approximate coordinates.
         '''
         location = LocationDao(self.session).read_location(event_id)
-        
+
         u = random.uniform(0, 1)
-        v = random.uniform(0, 1)
+        #  v = random.uniform(0, 1) UNUSED VARIABLE
         radius = 100
         r = radius / 111300
         w = r * math.sqrt(u)
         t = 2 * math.pi * u
         lat = w * math.cos(t)
         lon = w * math.sin(t)
-        
-        lat = lat/ math.cos(location.lon)
-        
+
+        lat = lat / math.cos(location.lon)
+
         location.lat = lat + location.lat
         location.lon = lon + location.lon
-        
+
         return location
 
-    def update_location(self, event_id : int ,location :  LocationUpdate) -> Location:
+    def update_location(self,
+                        event_id: int,
+                        location: LocationUpdate) -> Location:
         """Update a location in database.
-        
+
         Parameters
         ----------
         event_id : int
             The id of the event to update.
         location : LocationUpdate
             The new location data.
-            
+
         Returns
         -------
         Location
             The updated location.
         """
         location = Location.parse_obj(location)
-        coordinates = gmaps.geocode(f'{location.num} {location.street}, {location.city}, {location.zipcode}')[0]['geometry']['location']
+        temp_coords = gmaps.geocode(f"{location.num} {location.street}, " +
+                                    f"{location.city}, {location.zipcode}")
+        coordinates = temp_coords[0]['geometry']['location']
         location.lat = coordinates['lat']
-        location.lon = coordinates['lng']        
-        return LocationDao(self.session).update_location(event_id,location)
+        location.lon = coordinates['lng']
+        return LocationDao(self.session).update_location(event_id, location)
 
     def delete_location(self, event_id) -> Location:
         """Delete a location from database.
-        
+
         Parameters
         ----------
         event_id : int
             The id of the event to delete.
-            
+
         Returns
         -------
         Location
             The deleted location.
         """
-        
         return LocationDao(self.session).delete_location(event_id)
