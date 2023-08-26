@@ -97,7 +97,7 @@ class LocationService:
         radius = 100
         r = radius / 111300
         w = r * math.sqrt(u)
-        t = 2 * math.pi * u
+        t = 2 * math.pi * v
         lat = w * math.cos(t)
         lon = w * math.sin(t)
         
