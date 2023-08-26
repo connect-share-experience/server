@@ -12,39 +12,41 @@ from sqlmodel import SQLModel, Field, Relationship
 if TYPE_CHECKING:
     from app.models.events import Event
 
+
 class _AddressBase(SQLModel):
     '''This is the base model for other address models.
 
     For attributes, see each specific class.
     '''
-    num : Optional[int]
-    street : Optional[str]
-    city : Optional[str]
-    zipcode : Optional[int]
+    num: Optional[int]
+    street: Optional[str]
+    city: Optional[str]
+    zipcode: Optional[int]
     other: Optional[str]
     # We'll use the custom validator if we actually use lat, lon
 
 
 class _AddressBaseStrict(SQLModel):
     '''This model is used to validate the address data before
-    
+
     For attributes, see each specific class.
     '''
-    num : int
-    street : str
-    city : str
-    zipcode : int
+    num: int
+    street: str
+    city: str
+    zipcode: int
     other: Optional[str]
     # We'll use the custom validator if we actually use lat, lon
 
 
 class _LatLonBaseStrict(SQLModel):
     '''This model is used to validate the coordinates before
-    
+
     For attributes, see each specific class.
     '''
     lat: float = Field(gt=-90, lt=90)
     lon: float = Field(gt=-180, lt=180)
+
 
 class LocationCreate(_AddressBaseStrict):
     '''Model for creating locations.
@@ -63,6 +65,7 @@ class LocationCreate(_AddressBaseStrict):
         Additional information, such as floor or access instructions.
     '''
 
+
 class LocationUpdate(_AddressBase):
     '''Model for updating the location of the event.
 
@@ -80,6 +83,7 @@ class LocationUpdate(_AddressBase):
         Additional information, such as floor or access instructions.
     '''
 
+
 class LocationReadApprox(_LatLonBaseStrict):
     '''This class manages event locations.
 
@@ -90,6 +94,7 @@ class LocationReadApprox(_LatLonBaseStrict):
     lon: float = Field(gt=-180, lt=180)
         Longitude of the location.
     '''
+
 
 class LocationRead(_LatLonBaseStrict, _AddressBaseStrict):
     '''This class manages event locations.
@@ -112,7 +117,8 @@ class LocationRead(_LatLonBaseStrict, _AddressBaseStrict):
         Additional information, such as floor or access instructions.
     '''
 
-class Location(_AddressBaseStrict, _LatLonBaseStrict , table=True):
+
+class Location(_AddressBaseStrict, _LatLonBaseStrict, table=True):
     '''This class manages event locations.
 
     Attributes
@@ -140,15 +146,3 @@ class Location(_AddressBaseStrict, _LatLonBaseStrict , table=True):
                                     foreign_key="event.id",
                                     primary_key=True)
     event: Optional['Event'] = Relationship(back_populates="location")
-
-
-
-
-
-
-
-
-
-
-
-  
