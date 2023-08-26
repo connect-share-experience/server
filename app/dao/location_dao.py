@@ -9,8 +9,18 @@ from typing import List
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models.locations import Location, LocationUpdate
+from app.models.locations import Location, LocationUpdate, LocationCreate, LocationReadApprox
+import random
+import math
+import googlemaps
+import os
+from dotenv import load_dotenv
 
+load_dotenv(dotenv_path='./app/env')
+
+GoogleMapsKey = os.getenv('GoogleMapsKey')
+
+gmaps = googlemaps.Client(key=GoogleMapsKey)
 
 class LocationDao:
     """Data Access for locations.
@@ -47,6 +57,9 @@ class LocationDao:
         Location
             The created location.
         """
+        coordinates = gmaps.geocode(f'{location.num} {location.street}, {location.city}, {location.zipcode}')[0]['geometry']['location']
+        location.lat = coordinates['lat']
+        location.lon = coordinates['lng']
         self.session.add(location)
         self.session.commit()
         self.session.refresh(location)
@@ -75,7 +88,49 @@ class LocationDao:
             raise HTTPException(status_code=404,
                                 detail=f"Location associated to the event id {event_id} not found.")
         return location
+    
+    def read_location_approx(self, event_id: int) -> Location:
+        """Read a single location using its id.
 
+        Parameters
+        ----------
+        event_id : int
+            The id of the event associated to the location to read.
+
+        Returns
+        -------
+        Location
+            The location of the event that was read.
+
+        Raises
+        ------
+        HTTPException
+            Raised when there is no location with that id.
+        """
+        location = self.session.get(Location, event_id)
+        if location is None:
+            raise HTTPException(status_code=404,
+                                detail=f"Location associated to the event id {event_id} not found.")
+        
+        ## create the ramdomized location
+        u = random.uniform(0, 1)
+        v = random.uniform(0, 1)
+        radius = 100
+        r = radius / 111300
+        w = r * math.sqrt(u)
+        t = 2 * math.pi * u
+        lat = w * math.cos(t)
+        lon = w * math.sin(t)
+        
+        lat = lat/ math.cos(location.lon)
+        
+        location.lat = lat + location.lat
+        location.lon = lon + location.lon
+    
+        return location
+    
+    # TODO : put that in service and not in dao
+        
     def read_locations(self, offset: int, limit: int) -> List[Location]:
         """Read all locations from offset to offset+limit in the table.
 
@@ -102,7 +157,7 @@ class LocationDao:
         ----------
         event_id : int
             id of the location to update.
-        new_location : Location
+        new_location : LocationUpdate
             The new location whose data to use for the update.
 
         Returns
@@ -122,7 +177,9 @@ class LocationDao:
         new_data = new_location.dict(exclude_unset=True)
         for key, value in new_data.items():
             setattr(old_location, key, value)
-
+        coordinates = gmaps.geocode(f'{old_location.num} {old_location.street}, {old_location.city}, {old_location.zipcode}')[0]['geometry']['location']
+        old_location.lat = coordinates['lat']
+        old_location.lon = coordinates['lng']
         self.session.add(old_location)
         self.session.commit()
         self.session.refresh(old_location)

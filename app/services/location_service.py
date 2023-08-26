@@ -8,9 +8,9 @@ LocationService
 from datetime import date
 
 from sqlmodel import Session
-
 from app.dao.location_dao import LocationDao
-from app.models.locations import Location, LocationUpdate
+from app.models.locations import Location, LocationUpdate, LocationCreate
+
 
 
 class LocationService:
@@ -32,10 +32,7 @@ class LocationService:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_location(self,
-                          event_id: int,
-                          lat : float,
-                          lon : float) -> Location:
+    def create_location(self, location : LocationCreate) -> Location:
         """Create a location in database.
 
         Parameters
@@ -48,48 +45,56 @@ class LocationService:
         Location
             The location created.
         """
-        location = Location(event_id=event_id,
-                                lat=lat,
-                                lon=lon)
+        location = Location.parse_obj(location)
         return LocationDao(self.session).create_location(location)
 
-
-    def update_location(self,
-                                 lat : float,
-                                 lon : float) -> Location:
-        """Update a location status.
-
+    def read_location(self, event_id) -> Location:
+        """Read a location from database.
+        
         Parameters
         ----------
-        sender_id : int
-            The id of the user that sent the location invite.
-        receiver_id : int
-            The id of the user that reveived the location invite.
-        new_status : bool
-            The status of the relationship. True if accepted, False otherwise.
+        event_id : int
+            The id of the event to read.
+        
+        Returns
+        -------
+        Location
+            The location read.
+        """
+        return LocationDao(self.session).read_location(event_id)
+    
+    
 
+    def update_location(self, event_id : int ,location :  LocationUpdate) -> Location:
+        """Update a location in database.
+        
+        Parameters
+        ----------
+        event_id : int
+            The id of the event to update.
+        location : LocationUpdate
+            The new location data.
+            
         Returns
         -------
         Location
             The updated location.
         """
-        return (LocationDao(self.session)
-                .update_location(LocationUpdate(lat=lat,lon=lon)))
+        
+        return LocationDao(self.session).update_location(event_id,location)
 
-    def delete_location(self,
-                          event_id) -> Location:
-        """Delete a location.
-
+    def delete_location(self, event_id) -> Location:
+        """Delete a location from database.
+        
         Parameters
         ----------
-        sender_id : int
-            The id of the user that sent the location invite.
-        receiver_id : int
-            The id of the user that received the frienship invite.
-
+        event_id : int
+            The id of the event to delete.
+            
         Returns
         -------
         Location
             The deleted location.
         """
+        
         return LocationDao(self.session).delete_location(event_id)
