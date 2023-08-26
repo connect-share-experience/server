@@ -10,11 +10,8 @@ from fastapi import HTTPException
 from sqlmodel import Session, select
 
 from app.models.locations import Location, LocationUpdate, LocationCreate, LocationReadApprox
-import random
-import math
-import googlemaps
-import os
-from dotenv import load_dotenv
+
+
 
 
 
