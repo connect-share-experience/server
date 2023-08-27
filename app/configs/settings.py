@@ -128,3 +128,4 @@ class StaticSettings(_BaseAppSettings):
     """
     user_page_pic_dir: str = "static/images/user_page"
     event_page_pic_dir: str = "static/images/event_page"
+    events_dir: str = "static/images/events"

@@ -40,3 +40,11 @@ class EventCategory(_StrEnum):
     MOVIES = "movies"
     GAMING = "gaming"
     OTHER = "other"
+
+
+class MessageCategory(_StrEnum):
+    """This Enum class lists the different possible types of messages."""
+    ORGA = "orga"
+    ADDED = "added"
+    DELETED = "deleted"
+    PICTURE = "picture"

@@ -7,9 +7,8 @@ UserService
 """
 import shutil
 from typing import List
-from uuid import uuid4
 
-from fastapi import HTTPException, UploadFile
+from fastapi import UploadFile
 from sqlmodel import Session
 
 from app.configs.settings import StaticSettings
@@ -17,6 +16,7 @@ from app.dao.auth_dao import AuthDao
 from app.dao.user_dao import UserDao
 from app.models.auths import Auth
 from app.models.users import User, UserCreate, UserUpdate
+from app.utils.picture_utils import create_picture_name
 
 
 class UserService:
@@ -236,16 +236,8 @@ class UserService:
             Raised when the picture format is not allowed.
         """
         file_path = StaticSettings().user_page_pic_dir
-        if picture.filename is None:  # We try forcing extension into jpg
-            extension = "jpg"  # TODO probably shitty
-        else:
-            extension = picture.filename.split(".")[1]
 
-        if extension not in ["png", "jpg", 'jpeg', 'JPG']:
-            raise HTTPException(status_code=415,
-                                detail=f"File type .{extension} not allowed.")
-
-        token_name = uuid4().hex + "." + extension
+        token_name = create_picture_name(picture)
 
         user = UserDao(self.session).update_picture(user_id, token_name)
 

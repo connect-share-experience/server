@@ -20,6 +20,7 @@ from typing import List, Optional, TYPE_CHECKING
 from pydantic import validator
 from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
+from app.models.messages import Message
 from app.utils.validators import check_valid_phone
 from app.utils.regex_utils import CITY_REGEX, NAME_REGEX
 if TYPE_CHECKING:
@@ -190,6 +191,7 @@ class User(_UserBaseStrict, table=True):
     score: Optional[int] = Field(default=1000)
     picture: str = Field(default="default_user_pic.png")
 
+    messages: List["Message"] = Relationship(back_populates="user")
     event_links: List["UserEventLink"] = Relationship(back_populates="user")
     sent_invites: List["Friendship"] = Relationship(
         back_populates="invite_sender",

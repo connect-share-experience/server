@@ -94,6 +94,7 @@ class EventRead(_EventBaseStrict):
         Unique event identifier.
     """
     id: int
+    picture: str
 
 
 class Event(_EventBaseStrict, table=True):
@@ -118,6 +119,7 @@ class Event(_EventBaseStrict, table=True):
         requested of attended it.
     """
     id: Optional[int] = Field(default=None, primary_key=True)
+    picture: str = Field(default="default_event_pic.png")
 
     location: Optional['Location'] = Relationship(
         back_populates="event",
