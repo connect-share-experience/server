@@ -87,9 +87,34 @@ class UserEventLinkService:
                 participants.append(link.user)
         return participants
 
-    def is_participant_or_creator(self,
-                                  user_id: int,
-                                  event_id: int) -> bool:
+    def update_status(self,
+                      event_id: int,
+                      user_id: int,
+                      new_status: UserEventStatus) -> UserEventLink:
+        """Update the user-event link status.
+
+        Parameters
+        ----------
+        event_id : int
+            The id of the event in the link.
+        user_id : int
+            The id of the user in the link.
+        new_status : UserEventStatus
+            The new status to give the relationship.
+
+        Returns
+        -------
+        UserEventLink
+            The updated link.
+        """
+        link = UserEventLinkDao(self.session).read_user_event_link(user_id,
+                                                                   event_id)
+        link.status = new_status
+        self.session.add(link)
+        self.session.commit()
+        return link
+
+    def is_participant(self, user_id: int, event_id: int) -> bool:
         """Verifies weather the user attends or creates the event.
 
         Parameters
@@ -107,5 +132,26 @@ class UserEventLinkService:
         link = UserEventLinkDao(self.session).read_user_event_link(user_id,
                                                                    event_id)
         if link.status in [UserEventStatus.CREATOR, UserEventStatus.ATTENDS]:
+            return True
+        return False
+
+    def is_creator(self, user_id: int, event_id: int) -> bool:
+        """Verify whether the user created the event.
+
+        Parameters
+        ----------
+        user_id : int
+            The id of the user to check.
+        event_id : int
+            The id of the event to check.
+
+        Returns
+        -------
+        bool
+            True if the user created the event. False otherwise.
+        """
+        link = UserEventLinkDao(self.session).read_user_event_link(user_id,
+                                                                   event_id)
+        if link.status == UserEventStatus.CREATOR:
             return True
         return False

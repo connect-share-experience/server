@@ -6,6 +6,7 @@ MessageService
     Intermediate services for messages.
 """
 import shutil
+from datetime import datetime as dttime
 from typing import List
 
 from fastapi import UploadFile
@@ -29,6 +30,8 @@ class MessageService:
         Read all messages in event inbox
     create_picture_message(self, user_id, event_id, picture)
         Create a message containing a picture, and save said picture.
+    delete_message(self, user_id, event_id, datetime)
+        Delete a single message.
     """
     def __init__(self, session: Session) -> None:
         self.session = session
@@ -96,3 +99,27 @@ class MessageService:
                           category=MessageCategory.PICTURE,
                           text=token_name)
         return MessageDao(self.session).create_message(message)
+
+    def delete_message(self,
+                       event_id: int,
+                       user_id: int,
+                       datetime: dttime) -> Message:
+        """Delete a single message.
+
+        Parameters
+        ----------
+        event_id : int
+            The id of the event the message is posted in.
+        user_id : int
+            The id of the user that sent the message
+        datetime : dttime
+            The time the message was posted.
+
+        Returns
+        -------
+        Message
+            The deleted message.
+        """
+        return MessageDao(self.session).delete_message(event_id,
+                                                       user_id,
+                                                       datetime)

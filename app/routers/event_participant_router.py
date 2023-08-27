@@ -40,7 +40,7 @@ def send_picture(*,
     """
     # TODO gotta check that the user is either participant or creator of event
     if (UserEventLinkService(session)
-            .is_participant_or_creator(current_user.id, event_id)) is False:
+            .is_participant(current_user.id, event_id)) is False:
         raise HTTPException(
             status_code=401,
             detail=f"Current user isn't allowed in event {event_id}")
@@ -66,7 +66,7 @@ def read_inbox(*,
     """
     # TODO gotta check that the user is either participant or creator of event
     if (UserEventLinkService(session)
-            .is_participant_or_creator(current_user.id, event_id)) is False:
+            .is_participant(current_user.id, event_id)) is False:
         raise HTTPException(
             status_code=401,
             detail=f"Current user isn't allowed in event {event_id}")
@@ -88,7 +88,7 @@ def read_participants(*,
     - **event_id**: the id of the event the users take part in.
     """
     if (UserEventLinkService(session)
-            .is_participant_or_creator(current_user.id, event_id)) is False:
+            .is_participant(current_user.id, event_id)) is False:
         raise HTTPException(
             status_code=401,
             detail=f"Current user isn't allowed in event {event_id}")

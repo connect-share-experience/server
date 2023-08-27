@@ -28,6 +28,7 @@ class UserEventStatus(_StrEnum):
     """This Enum class lists the different possible status for User-Event."""
     ATTENDS = "attends"
     CREATOR = "creator"
+    DELETED = "deleted"
     DENIED = "denied"
     PENDING = "pending"
 
