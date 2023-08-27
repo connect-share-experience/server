@@ -39,6 +39,15 @@ class _AddressBaseStrict(SQLModel):
     # We'll use the custom validator if we actually use lat, lon
 
 
+class _LatLonBase(SQLModel):
+    '''This is the base model for other lat/lon models.
+
+    For attributes, see each specific class.
+    '''
+    lat: Optional[float] = Field(gt=-90, lt=90)
+    lon: Optional[float] = Field(gt=-180, lt=180)
+
+
 class _LatLonBaseStrict(SQLModel):
     '''This model is used to validate the coordinates before
 
@@ -66,11 +75,15 @@ class LocationCreate(_AddressBaseStrict):
     '''
 
 
-class LocationUpdate(_AddressBase):
+class LocationUpdate(_AddressBase, _LatLonBase):
     '''Model for updating the location of the event.
 
     Attributes
     ----------
+    lat: Optional[float] = Field(gt=-90, lt=90)
+        Latitude of the location.
+    lon: Optional[float] = Field(gt=-180, lt=180)
+        Longitude of the location.
     num : Optional[int]
         The num component of the address.
     street : Optional[str]

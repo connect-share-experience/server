@@ -107,7 +107,7 @@ class AuthSettings(_BaseAppSettings):
 
 class ExtResourcesSettings(_BaseAppSettings):
     """Contains settings related to external resources, API keys and such.
-    
+
     Attributes
     ----------
     gmaps_key: str

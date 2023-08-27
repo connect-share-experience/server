@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
@@ -26,18 +25,6 @@ async def create_location(*,
     - **body** : the location to create. Model LocationCreate.
     '''
     return LocationService(session).create_location(location)
-
-
-@router.get(path="/",
-            response_model=List[LocationRead],
-            response_description="Data of all locations.",
-            summary="Read all locations.")
-async def read_locations(*,
-                         session: Session = Depends(get_session)):
-    '''
-    This function reads all locations from the database.
-    '''
-    return LocationService(session).read_locations()
 
 
 @router.get(path="/{event_id}",

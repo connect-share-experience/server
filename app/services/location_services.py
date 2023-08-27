@@ -50,13 +50,15 @@ class LocationService:
         Location
             The location created.
         """
-        location = Location.parse_obj(location)
-        temp_coords = gmaps.geocode(f"{location.num} {location.street}, " +
-                                    f"{location.city}, {location.zipcode}")
+        new_location = Location.parse_obj(location)
+        temp_coords = gmaps.geocode(f"{new_location.num}" +
+                                    f"{new_location.street}," +
+                                    f"{new_location.city}," +
+                                    f"{new_location.zipcode}")
         coordinates = temp_coords[0]['geometry']['location']
-        location.lat = coordinates['lat']
-        location.lon = coordinates['lng']
-        return LocationDao(self.session).create_location(location)
+        new_location.lat = coordinates['lat']
+        new_location.lon = coordinates['lng']
+        return LocationDao(self.session).create_location(new_location)
 
     def read_location(self, event_id: int) -> Location:
         """Read a location from database.
@@ -87,21 +89,17 @@ class LocationService:
             The location read with approximate coordinates.
         '''
         location = LocationDao(self.session).read_location(event_id)
-
         u = random.uniform(0, 1)
-        #  v = random.uniform(0, 1) UNUSED VARIABLE
-        radius = 100
-        r = radius / 111300
-        w = r * math.sqrt(u)
+        v = random.uniform(0, 1)
+        radius = 100.0
+        radius = radius / 111300
+        weight = radius * math.sqrt(u)
         t = 2 * math.pi * v
-        lat = w * math.cos(t)
-        lon = w * math.sin(t)
-
+        lat = weight * math.cos(t)
+        lon = weight * math.sin(t)
         lat = lat / math.cos(location.lon)
-
         location.lat = lat + location.lat
         location.lon = lon + location.lon
-
         return location
 
     def update_location(self,
@@ -121,7 +119,6 @@ class LocationService:
         Location
             The updated location.
         """
-        location = Location.parse_obj(location)
         temp_coords = gmaps.geocode(f"{location.num} {location.street}, " +
                                     f"{location.city}, {location.zipcode}")
         coordinates = temp_coords[0]['geometry']['location']
