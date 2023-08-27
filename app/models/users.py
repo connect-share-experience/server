@@ -145,6 +145,7 @@ class UserRead(_UserBaseStrict):
     id: int
     score: int
     register_date: date
+    picture: str
 
 
 class User(_UserBaseStrict, table=True):
@@ -187,6 +188,7 @@ class User(_UserBaseStrict, table=True):
     id: int = Field(default=None, primary_key=True)
     register_date: date = Field(default=date.today())
     score: Optional[int] = Field(default=1000)
+    picture: str = Field(default="default_user_pic.png")
 
     event_links: List["UserEventLink"] = Relationship(back_populates="user")
     sent_invites: List["Friendship"] = Relationship(

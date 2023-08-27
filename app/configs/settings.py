@@ -107,10 +107,24 @@ class AuthSettings(_BaseAppSettings):
 
 class ExtResourcesSettings(_BaseAppSettings):
     """Contains settings related to external resources, API keys and such.
-    
+
     Attributes
     ----------
     gmaps_key: str
         Secret key for Google Maps API.
     """
     gmaps_key: str = Field(..., env="GOOGLE_MAPS_KEY")
+
+
+class StaticSettings(_BaseAppSettings):
+    """Contains settings related to handling static files.
+
+    Attributes
+    ----------
+    user_page_pic_dir: str
+        Path to directory containing user profile pictures.
+    event_page_pic_dir: str
+        Path to directory containing event page pictures.
+    """
+    user_page_pic_dir: str = "static/images/user_page"
+    event_page_pic_dir: str = "static/images/event_page"

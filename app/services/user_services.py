@@ -5,10 +5,14 @@ Classes
 UserService
     Intermediate services for users.
 """
+import shutil
 from typing import List
+from uuid import uuid4
 
+from fastapi import HTTPException, UploadFile
 from sqlmodel import Session
 
+from app.configs.settings import StaticSettings
 from app.dao.auth_dao import AuthDao
 from app.dao.user_dao import UserDao
 from app.models.auths import Auth
@@ -210,3 +214,43 @@ class UserService:
             if invite.accepted is True:
                 friends.append(invite.invite_sender)
         return friends
+
+    def update_picture(self, user_id: int, picture: UploadFile) -> User:
+        """Update a user picture.
+
+        Parameters
+        ----------
+        user_id : int
+            The id of the user to update
+        picture : UploadFile
+            The picture file.
+
+        Returns
+        -------
+        User
+            The updated user.
+
+        Raises
+        ------
+        HTTPException
+            Raised when the picture format is not allowed.
+        """
+        file_path = StaticSettings().user_page_pic_dir
+        if picture.filename is None:  # We try forcing extension into jpg
+            extension = "jpg"  # TODO probably shitty
+        else:
+            extension = picture.filename.split(".")[1]
+
+        if extension not in ["png", "jpg", 'jpeg', 'JPG']:
+            raise HTTPException(status_code=415,
+                                detail=f"File type .{extension} not allowed.")
+
+        token_name = uuid4().hex + "." + extension
+
+        user = UserDao(self.session).update_picture(user_id, token_name)
+
+        with open(f"{file_path}/{user.picture}", "wb") as buffer:
+            shutil.copyfileobj(picture.file, buffer)
+        picture.file.close()
+
+        return user

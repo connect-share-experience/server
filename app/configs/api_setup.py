@@ -5,8 +5,10 @@ from enum import Enum
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.configs.database_setup import create_db_and_tables
+from app.configs.settings import StaticSettings
 from app.routers import (authentication_router,
                          user_router,
                          friendship_router)
@@ -70,3 +72,7 @@ app.include_router(authentication_router.router, tags=[Tags.AUTH])
 app.include_router(user_router.router, tags=[Tags.USER])
 app.include_router(friendship_router.router, tags=[Tags.FRIEND])
 # app.include_router(event_router.router, tags=[Tags.EVENT])
+
+app.mount("/user_page_picture",
+          StaticFiles(directory=StaticSettings().user_page_pic_dir),
+          name="user_page_picture")

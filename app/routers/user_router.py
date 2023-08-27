@@ -20,7 +20,7 @@ read_friends()
     Get current user's friends.
 """
 from typing import List
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile
 from sqlmodel import Session
 
 from app.configs.api_dependencies import get_current_user, get_session
@@ -136,6 +136,23 @@ def read_friends(*,
     """
     Get the list of friends of the current user.
 
-    - **token** : usual authentucation header token.
+    - **token** : usual authentication header token.
     """
     return UserService(session).read_friends(current_user.id)
+
+
+@router.patch(path="/picture",
+              response_model=UserRead,
+              response_description="The updated user with picture.",
+              summary="Update a user's profile picture.")
+def update_picture(*,
+                   current_user: User = Depends(get_current_user),
+                   session: Session = Depends(get_session),
+                   file: UploadFile):
+    """
+    Update the profile picture of the current user.
+
+    - **token** usual authentication header token.
+    - **file** the picture to upload. Use png or jpg.
+    """
+    return UserService(session).update_picture(current_user.id, file)
