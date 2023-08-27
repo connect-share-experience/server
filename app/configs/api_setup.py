@@ -5,11 +5,15 @@ from enum import Enum
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from app.configs.database_setup import create_db_and_tables
+from app.configs.settings import StaticSettings
 from app.routers import (authentication_router,
                          user_router,
-                         friendship_router)
+                         friendship_router,
+                         event_participant_router,
+                         event_creator_router)
 
 
 class Tags(Enum):
@@ -17,7 +21,8 @@ class Tags(Enum):
     AUTH = "Authentication"
     USER = "User"
     FRIEND = "Friendship"
-    EVENT = "event"
+    EVENT_PART = "Event Participant"
+    EVENT_CRE = "Event Creator"
 
 
 tags_metadata = [
@@ -35,9 +40,14 @@ tags_metadata = [
                           modification and deletion."""
     },
     {
-        "name": Tags.EVENT.value,
-        "description": """Operations related to event creation,
-                          modification and deletion."""
+        "name": Tags.EVENT_PART.value,
+        "description": """Operations related to events and only accessible
+                          to users that take part in that event."""
+    },
+    {
+        "name": Tags.EVENT_CRE.value,
+        "description": """Operations related to events and only accessible to
+                          users that created that event."""
     }
 ]
 
@@ -70,3 +80,15 @@ app.include_router(authentication_router.router, tags=[Tags.AUTH])
 app.include_router(user_router.router, tags=[Tags.USER])
 app.include_router(friendship_router.router, tags=[Tags.FRIEND])
 # app.include_router(event_router.router, tags=[Tags.EVENT])
+app.include_router(event_participant_router.router, tags=[Tags.EVENT_PART])
+app.include_router(event_creator_router.router, tags=[Tags.EVENT_CRE])
+
+app.mount("/user_page_picture",
+          StaticFiles(directory=StaticSettings().user_page_pic_dir),
+          name="user_page_picture")
+app.mount("/event_page_picture",
+          StaticFiles(directory=StaticSettings().event_page_pic_dir),
+          name="event_page_picture")
+app.mount("/event_pictures",
+          StaticFiles(directory=StaticSettings().events_dir),
+          name="event_pictures")

@@ -181,3 +181,34 @@ class UserDao:
         self.session.delete(user)
         self.session.commit()
         return user
+
+    def update_picture(self, user_id: int, picture_name: str) -> User:
+        """Update the profile picture name of the user in database.
+
+        Parameters
+        ----------
+        user_id : int
+            The id of the user to update.
+        picture_name : str
+            Identifier of the picture.
+
+        Returns
+        -------
+        User
+            The updated user.
+
+        Raises
+        ------
+        HTTPException
+            Raised when no user with such id is found.
+        """
+        old_user = self.session.get(User, user_id)
+        if not old_user:
+            raise HTTPException(status_code=404,
+                                detail=f"User with id {user_id} not found.")
+        if old_user.picture != "default_user_pic.png":
+            old_user.picture = picture_name
+            self.session.add(old_user)
+            self.session.commit()
+            self.session.refresh(old_user)
+        return old_user

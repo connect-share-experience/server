@@ -5,14 +5,18 @@ Classes
 UserService
     Intermediate services for users.
 """
+import shutil
 from typing import List
 
+from fastapi import UploadFile
 from sqlmodel import Session
 
+from app.configs.settings import StaticSettings
 from app.dao.auth_dao import AuthDao
 from app.dao.user_dao import UserDao
 from app.models.auths import Auth
 from app.models.users import User, UserCreate, UserUpdate
+from app.utils.picture_utils import create_picture_name
 
 
 class UserService:
@@ -210,3 +214,35 @@ class UserService:
             if invite.accepted is True:
                 friends.append(invite.invite_sender)
         return friends
+
+    def update_picture(self, user_id: int, picture: UploadFile) -> User:
+        """Update a user picture.
+
+        Parameters
+        ----------
+        user_id : int
+            The id of the user to update
+        picture : UploadFile
+            The picture file.
+
+        Returns
+        -------
+        User
+            The updated user.
+
+        Raises
+        ------
+        HTTPException
+            Raised when the picture format is not allowed.
+        """
+        file_path = StaticSettings().user_page_pic_dir
+
+        token_name = create_picture_name(picture)
+
+        user = UserDao(self.session).update_picture(user_id, token_name)
+
+        with open(f"{file_path}/{user.picture}", "wb") as buffer:
+            shutil.copyfileobj(picture.file, buffer)
+        picture.file.close()
+
+        return user

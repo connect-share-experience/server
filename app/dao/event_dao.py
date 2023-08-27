@@ -153,3 +153,34 @@ class EventDao:
         self.session.delete(event)
         self.session.commit()
         return event
+
+    def update_picture(self, event_id: int, picture_name: str) -> Event:
+        """Update envent page picture.
+
+        Parameters
+        ----------
+        event_id : int
+            The id of the event whose picture to update.
+        picture_name : str
+            Name to give the picture file, and save in database.
+
+        Returns
+        -------
+        Event
+            The updated event.
+
+        Raises
+        ------
+        HTTPException
+            Raised when the event to update cannot be found.
+        """
+        old_event = self.session.get(Event, event_id)
+        if not old_event:
+            raise HTTPException(status_code=404,
+                                detail=f"Event with id {event_id} not found")
+        if old_event.picture != "default_user_pic.png":
+            old_event.picture = picture_name
+            self.session.add(old_event)
+            self.session.commit()
+            self.session.refresh(old_event)
+        return old_event

@@ -5,13 +5,16 @@ Classes
 EventService
     Intermediate services for events.
 """
-from datetime import datetime
+import os
+import shutil
 
+from fastapi import UploadFile
 from sqlmodel import Session
 
+from app.configs.settings import StaticSettings
 from app.dao.event_dao import EventDao
-from app.models.events import Event, EventUpdate
-from app.models.enums import EventCategory
+from app.models.events import Event, EventUpdate, EventCreate
+from app.utils.picture_utils import create_picture_name
 
 
 class EventService:
@@ -31,12 +34,7 @@ class EventService:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_event(self,
-                     name: str,
-                     desc: str,
-                     category: EventCategory,
-                     datetime: datetime,
-                     capacity: int) -> Event:
+    def create_event(self, event: EventCreate) -> Event:
         """Create a frienship in database.
 
         Parameters
@@ -49,12 +47,13 @@ class EventService:
         Event
             The event created.
         """
-        event = Event(name=name,
-                      desc=desc,
-                      category=category,
-                      datetime=datetime,
-                      capacity=capacity)
-        return EventDao(self.session).create_event(event)
+        new_event = Event.parse_obj(event)
+        db_event = EventDao(self.session).create_event(new_event)
+        try:
+            os.mkdir(path=f"{StaticSettings().events_dir}/event_{db_event.id}")
+        except FileExistsError:
+            pass
+        return db_event
 
     def update_event(self,
                      event_id: int,
@@ -91,3 +90,30 @@ class EventService:
             The deleted event.
         """
         return EventDao(self.session).delete_event(event_id)
+
+    def update_picture(self, event_id: int, picture: UploadFile) -> Event:
+        """Update an event page picture.
+
+        Parameters
+        ----------
+        event_id : int
+            The id of the event whose picture to update.
+        picture : UploadFile
+            The picture to use.
+
+        Returns
+        -------
+        Event
+            The updated event.
+        """
+        file_path = StaticSettings().event_page_pic_dir
+
+        token_name = create_picture_name(picture)
+
+        event = EventDao(self.session).update_picture(event_id, token_name)
+
+        with open(f"{file_path}/{event.picture}", "wb") as buffer:
+            shutil.copyfileobj(picture.file, buffer)
+        picture.file.close()
+
+        return event
