@@ -56,7 +56,8 @@ class FriendshipDao:
 
     def read_friendship(self,
                         sender_id: int,
-                        receiver_id: int) -> Friendship:
+                        receiver_id: int,
+                        event_id: int) -> Friendship:
         """Read a single friendship.
 
         Parameters
@@ -65,6 +66,8 @@ class FriendshipDao:
             The id of the user that sent the invite.
         receiver_id : int
             The id of the user that received the invite.
+        event_id : int
+            The id of the event shared.
 
         Returns
         -------
@@ -78,7 +81,8 @@ class FriendshipDao:
         """
         statement = (select(Friendship)
                      .where(Friendship.invite_receiver_id == receiver_id)
-                     .where(Friendship.invite_sender_id == sender_id))
+                     .where(Friendship.invite_sender_id == sender_id)
+                     .where(Friendship.event_id == event_id))
         friendship = self.session.exec(statement).one_or_none()
         if friendship is None:
             raise HTTPException(status_code=404,
@@ -87,7 +91,8 @@ class FriendshipDao:
 
     def get_friendship(self,
                        user1_id: int,
-                       user2_id: int) -> Friendship:
+                       user2_id: int,
+                       event_id: int) -> Friendship:
         """Read a frienship both ways.
 
         In this method, we search for the frienship without specifying wich
@@ -113,9 +118,11 @@ class FriendshipDao:
         statement = f"""SELECT *
                      FROM friendship
                      WHERE (invite_receiver_id = {user1_id}
-                            AND invite_sender_id == {user2_id})
+                            AND invite_sender_id == {user2_id}
+                            AND event_id == {event_id})
                      OR (invite_receiver_id = {user2_id}
-                            AND invite_sender_id == {user1_id});"""
+                            AND invite_sender_id == {user1_id}
+                            AND event_id == {event_id});"""
         temp = self.session.execute(statement)  # type: ignore
         friendship = temp.one_or_none()
         if isinstance(friendship, Friendship):
@@ -143,7 +150,8 @@ class FriendshipDao:
 
     def delete_friendship(self,
                           sender_id: int,
-                          receiver_id: int) -> Friendship:
+                          receiver_id: int,
+                          event_id: int) -> Friendship:
         """Delete a friendship.
 
         Parameters
@@ -165,7 +173,8 @@ class FriendshipDao:
         """
         statement = (select(Friendship)
                      .where(Friendship.invite_receiver_id == receiver_id)
-                     .where(Friendship.invite_sender_id == sender_id))
+                     .where(Friendship.invite_sender_id == sender_id)
+                     .where(Friendship.event_id == event_id))
         friendship = self.session.exec(statement).one_or_none()
         if friendship is None:
             raise HTTPException(status_code=401,
@@ -177,6 +186,7 @@ class FriendshipDao:
     def update_friendship_status(self,
                                  sender_id: int,
                                  receiver_id: int,
+                                 event_id: int,
                                  new_status: bool) -> Friendship:
         """Update a friendship status.
 
@@ -186,6 +196,8 @@ class FriendshipDao:
             The id of the user that sent the friendship invite.
         receiver_id : int
             The id of the user that reveived the friendship invite.
+        event_id : int
+            The id of the event shared.
         new_status : bool
             The status of the relationship. True if accepted, False otherwise.
 
@@ -201,7 +213,8 @@ class FriendshipDao:
         """
         statement = (select(Friendship)
                      .where(Friendship.invite_receiver_id == receiver_id)
-                     .where(Friendship.invite_sender_id == sender_id))
+                     .where(Friendship.invite_sender_id == sender_id)
+                     .where(Friendship.event_id == event_id))
         friendship = self.session.exec(statement).one_or_none()
         if friendship is None:
             raise HTTPException(status_code=401,

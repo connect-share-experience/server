@@ -11,6 +11,8 @@ from sqlmodel import Session
 
 from app.dao.friendship_dao import FriendshipDao
 from app.models.links import Friendship
+from app.services.link_user_event_services import UserEventLinkService
+from app.dao.event_dao import EventDao
 
 
 class FriendshipService:
@@ -47,10 +49,21 @@ class FriendshipService:
         Friendship
             The friendship created.
         """
+        shared_events = UserEventLinkService().find_shared_events(
+                                                                sender_id,
+                                                                receiver_id)
+        if not shared_events:
+            # Handle the case where there are no shared events if needed
+            pass  # TODO : http error to add here 
+        most_recent_event = sorted(
+            shared_events,
+            key=lambda x: EventDao(self.session).read_event(
+                x.event_id).datetime, reverse=True)[0]
         friendship = Friendship(invite_sender_id=sender_id,
                                 invite_receiver_id=receiver_id,
                                 date=date.today(),
-                                accepted=False)
+                                accepted=False,
+                                event_id=most_recent_event.event_id)
         return FriendshipDao(self.session).create_friendship(friendship)
 
     def get_friendship(self,
