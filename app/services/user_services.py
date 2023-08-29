@@ -15,6 +15,7 @@ from app.configs.settings import StaticSettings
 from app.dao.auth_dao import AuthDao
 from app.dao.user_dao import UserDao
 from app.models.auths import Auth
+from app.models.enums import FriendshipStatus
 from app.models.users import User, UserCreate, UserUpdate
 from app.utils.picture_utils import create_picture_name
 
@@ -168,7 +169,7 @@ class UserService:
         user = UserDao(self.session).read_user(user_id)
         users = []
         for invite in user.sent_invites:
-            if invite.accepted is False:
+            if invite.status == FriendshipStatus.PENDING:
                 users.append(invite.invite_receiver)
         return users
 
@@ -188,7 +189,7 @@ class UserService:
         user = UserDao(self.session).read_user(user_id)
         users = []
         for invite in user.received_invites:
-            if invite.accepted is False:
+            if invite.status == FriendshipStatus.PENDING:
                 users.append(invite.invite_sender)
         return users
 
@@ -208,10 +209,10 @@ class UserService:
         user = UserDao(self.session).read_user(user_id)
         friends = []
         for invite in user.sent_invites:
-            if invite.accepted is True:
+            if invite.status == FriendshipStatus.ACCEPTED:
                 friends.append(invite.invite_receiver)
         for invite in user.received_invites:
-            if invite.accepted is True:
+            if invite.status == FriendshipStatus.ACCEPTED:
                 friends.append(invite.invite_sender)
         return friends
 

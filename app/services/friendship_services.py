@@ -5,11 +5,12 @@ Classes
 FriendshipService
     Intermediate services for friendships.
 """
-from datetime import date
+from datetime import date as dt
 
 from sqlmodel import Session
 
 from app.dao.friendship_dao import FriendshipDao
+from app.models.enums import FriendshipStatus
 from app.models.links import Friendship
 
 
@@ -49,8 +50,8 @@ class FriendshipService:
         """
         friendship = Friendship(invite_sender_id=sender_id,
                                 invite_receiver_id=receiver_id,
-                                date=date.today(),
-                                accepted=False)
+                                date=dt.today(),
+                                status=FriendshipStatus.PENDING)
         return FriendshipDao(self.session).create_friendship(friendship)
 
     def get_friendship(self,

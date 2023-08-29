@@ -33,6 +33,13 @@ class UserEventStatus(_StrEnum):
     PENDING = "pending"
 
 
+class FriendshipStatus(_StrEnum):
+    """This Enum class lists the different possible status for friendships."""
+    PENDING = "pending"
+    ACCEPTED = "accepted"
+    DENIED = "denied"
+
+
 class EventCategory(_StrEnum):
     """This Enum class lists the different possible types of events."""
     PARTY = "party"

@@ -1,9 +1,15 @@
-"""This module implements all the models used for many-to-many relations."""
-from datetime import date
+"""This module implements all the models used for many-to-many relations.
+
+Classes
+-------
+Friendship(SQLModel, table=True)
+    Link for the relationships between users.
+"""
+from datetime import date as dt
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
 
-from app.models.enums import UserEventStatus
+from app.models.enums import UserEventStatus, FriendshipStatus
 
 from app.models.users import User
 from app.models.events import Event
@@ -27,8 +33,8 @@ class Friendship(SQLModel, table=True):
     invite_receiver_id: Optional[int] = Field(default=None,
                                               foreign_key="user.id",
                                               primary_key=True)
-    date: date
-    accepted: bool
+    date: dt
+    status: FriendshipStatus
     invite_sender: "User" = Relationship(
         back_populates="sent_invites",
         sa_relationship_kwargs={
@@ -51,6 +57,10 @@ class UserEventLink(SQLModel, table=True):
         id of the User that attended.
     event_id: Optional[int]
         id of the event attended.
+    status: UserEventStatus
+        The status of the link, i.e it the user created, attends, etc.
+    text: Optional[str]
+        Used when a message is sent by a user that wants to join an event.
     """
     user_id: Optional[int] = Field(default=None,
                                    foreign_key="user.id",
@@ -59,6 +69,7 @@ class UserEventLink(SQLModel, table=True):
                                     foreign_key="event.id",
                                     primary_key=True)
     status: UserEventStatus
+    text: Optional[str]
 
     user: "User" = Relationship(back_populates="event_links")
     event: "Event" = Relationship(back_populates="user_links")
