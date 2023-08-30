@@ -10,6 +10,7 @@ from typing import List
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
+from app.models.enums import FriendshipStatus
 from app.models.links import Friendship
 
 
@@ -186,8 +187,7 @@ class FriendshipDao:
     def update_friendship_status(self,
                                  sender_id: int,
                                  receiver_id: int,
-                                 event_id: int,
-                                 new_status: bool) -> Friendship:
+                                 new_status: FriendshipStatus) -> Friendship:
         """Update a friendship status.
 
         Parameters
@@ -196,10 +196,8 @@ class FriendshipDao:
             The id of the user that sent the friendship invite.
         receiver_id : int
             The id of the user that reveived the friendship invite.
-        event_id : int
-            The id of the event shared.
-        new_status : bool
-            The status of the relationship. True if accepted, False otherwise.
+        new_status : FriendshipStatus
+            The status of the relationship.
 
         Returns
         -------
@@ -219,7 +217,7 @@ class FriendshipDao:
         if friendship is None:
             raise HTTPException(status_code=401,
                                 detail="Friendship not found.")
-        friendship.accepted = new_status
+        friendship.status = new_status
         self.session.add(friendship)
         self.session.commit()
         return friendship

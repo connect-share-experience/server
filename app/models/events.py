@@ -11,7 +11,7 @@ EventRead(SQLModel)
 Event(SQLModel, table=True)
     Model for events in database.
 """
-from datetime import datetime
+from datetime import datetime as dttime
 from typing import List, Optional, TYPE_CHECKING
 
 from sqlmodel import SQLModel, Field, Relationship
@@ -32,7 +32,8 @@ class _EventBase(SQLModel):
     name: Optional[str] = Field(max_length=100)
     desc: Optional[str] = Field(max_length=2000)
     category: Optional[EventCategory]
-    datetime: Optional[datetime]
+    start_time: Optional[dttime]
+    end_time: Optional[dttime]
     capacity: Optional[int] = Field(gt=1)
 
 
@@ -41,7 +42,8 @@ class _EventBaseStrict(_EventBase):
     name: str = Field(max_length=100)
     desc: str = Field(max_length=2000)  # optional
     category: EventCategory
-    datetime: datetime
+    start_time: dttime
+    end_time: dttime
     capacity: int = Field(ge=2)
 
 
@@ -54,8 +56,10 @@ class EventUpdate(_EventBase):
         The type of event. The list of possibilities is fixed.
     capacity: Optional[int]
         The attendees capacity. Must be at least 2.
-    datetime: Optional[datetime]
-        The date and time the event takes place.
+    start_time: Optional[datetime]
+        The date and time the event starts.
+    end_time: Optional[datetime]
+        The date and time the event ends.
     desc: Optional[str]
         A description of the event. Maximum 2000 characters.
     """
@@ -70,8 +74,10 @@ class EventCreate(_EventBaseStrict):
         The type of event. The list of possibilities is fixed.
     capacity: int
         The attendees capacity. Must be at least 2.
-    datetime: datetime
-        The date and time the event takes place.
+    start_time: datetime
+        The date and time the event starts.
+    end_time: datetime
+        The date and time the event ends.
     desc: str
         A description of the event. Maximum 2000 characters.
     """
@@ -86,8 +92,10 @@ class EventRead(_EventBaseStrict):
         The type of event. The list of possibilities is fixed.
     capacity: int
         The attendees capacity. Must be at least 2.
-    datetime: datetime
-        The date and time the event takes place.
+    start_time: datetime
+        The date and time the event starts.
+    end_time: datetime
+        The date and time the event ends.
     desc: str
         A description of the event. Maximum 2000 characters.
     id: int
@@ -106,8 +114,10 @@ class Event(_EventBaseStrict, table=True):
         The type of event. The list of possibilities is fixed.
     capacity: int
         The attendees capacity. Must be at least 2.
-    datetime: datetime
-        The date and time the event takes place.
+    start_time: datetime
+        The date and time the event starts.
+    end_time: datetime
+        The date and time the event ends.
     desc: str
         A description of the event. Maximum 2000 characters.
     id: int

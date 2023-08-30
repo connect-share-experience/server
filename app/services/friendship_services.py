@@ -49,7 +49,7 @@ class FriendshipService:
         Friendship
             The friendship created.
         """
-        shared_events = UserEventLinkService().find_shared_events(
+        shared_events = UserEventLinkService(self.session).find_shared_events(
                                                                 sender_id,
                                                                 receiver_id)
         if not shared_events:
@@ -61,9 +61,8 @@ class FriendshipService:
                 x.event_id).datetime, reverse=True)[0]
         friendship = Friendship(invite_sender_id=sender_id,
                                 invite_receiver_id=receiver_id,
-                                date=date.today(),
-                                accepted=False,
-                                event_id=most_recent_event.event_id)
+                                date=dt.today(),
+                                status=FriendshipStatus.PENDING)
         return FriendshipDao(self.session).create_friendship(friendship)
 
     def get_friendship(self,
