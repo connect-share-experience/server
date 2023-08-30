@@ -33,15 +33,9 @@ class Friendship(SQLModel, table=True):
     invite_receiver_id: Optional[int] = Field(default=None,
                                               foreign_key="user.id",
                                               primary_key=True)
-<<<<<<< HEAD
-    event_id: Optional[int] = Field(default=None,
-                                    foreign_key="event.id")
-    date: date
-    accepted: bool
-=======
+    event_id: Optional[int] = Field(default=None, foreign_key="event.id")
     date: dt
     status: FriendshipStatus
->>>>>>> d177594ff4a9424a9b97199f4b8121c43f3319fd
     invite_sender: "User" = Relationship(
         back_populates="sent_invites",
         sa_relationship_kwargs={
@@ -50,10 +44,6 @@ class Friendship(SQLModel, table=True):
         back_populates="received_invites",
         sa_relationship_kwargs={
             "foreign_keys": "Friendship.invite_receiver_id"})
-    event: "Event" = Relationship(
-        back_populates="shared_event",
-        sa_relationship_kwargs={
-            "foreign_keys": "Friendship.event_id"})
 
 
 class UserEventLink(SQLModel, table=True):

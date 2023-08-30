@@ -57,8 +57,7 @@ class FriendshipDao:
 
     def read_friendship(self,
                         sender_id: int,
-                        receiver_id: int,
-                        event_id: int) -> Friendship:
+                        receiver_id: int) -> Friendship:
         """Read a single friendship.
 
         Parameters
@@ -82,8 +81,7 @@ class FriendshipDao:
         """
         statement = (select(Friendship)
                      .where(Friendship.invite_receiver_id == receiver_id)
-                     .where(Friendship.invite_sender_id == sender_id)
-                     .where(Friendship.event_id == event_id))
+                     .where(Friendship.invite_sender_id == sender_id))
         friendship = self.session.exec(statement).one_or_none()
         if friendship is None:
             raise HTTPException(status_code=404,
@@ -211,8 +209,7 @@ class FriendshipDao:
         """
         statement = (select(Friendship)
                      .where(Friendship.invite_receiver_id == receiver_id)
-                     .where(Friendship.invite_sender_id == sender_id)
-                     .where(Friendship.event_id == event_id))
+                     .where(Friendship.invite_sender_id == sender_id))
         friendship = self.session.exec(statement).one_or_none()
         if friendship is None:
             raise HTTPException(status_code=401,

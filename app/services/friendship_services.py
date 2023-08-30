@@ -5,11 +5,12 @@ Classes
 FriendshipService
     Intermediate services for friendships.
 """
-from datetime import date
+from datetime import date as dt
 
 from sqlmodel import Session
 
 from app.dao.friendship_dao import FriendshipDao
+from app.models.enums import FriendshipStatus
 from app.models.links import Friendship
 from app.services.link_user_event_services import UserEventLinkService
 from app.dao.event_dao import EventDao
@@ -54,15 +55,16 @@ class FriendshipService:
                                                                 receiver_id)
         if not shared_events:
             # Handle the case where there are no shared events if needed
-            pass  # TODO : http error to add here 
+            pass  # TODO : http error to add here
         most_recent_event = sorted(
             shared_events,
             key=lambda x: EventDao(self.session).read_event(
-                x.event_id).datetime, reverse=True)[0]
+                x.event_id).start_time, reverse=True)[0]
         friendship = Friendship(invite_sender_id=sender_id,
                                 invite_receiver_id=receiver_id,
                                 date=dt.today(),
-                                status=FriendshipStatus.PENDING)
+                                status=FriendshipStatus.PENDING,
+                                event_id=most_recent_event.event_id)
         return FriendshipDao(self.session).create_friendship(friendship)
 
     def get_friendship(self,
