@@ -155,7 +155,7 @@ class UserEventLinkService:
         if link.status == UserEventStatus.CREATOR:
             return True
         return False
-    
+
     def find_shared_events(self,
                            user_id1: int,
                            user_id2: int) -> List[UserEventLink]:
