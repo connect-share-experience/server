@@ -18,8 +18,9 @@ from sqlmodel import SQLModel, Field, Relationship
 
 from app.models.enums import EventCategory
 if TYPE_CHECKING:
+    from app.models.addresses import Address
+    from app.models.latitudes_longitudes import LatLon
     from app.models.links import UserEventLink
-    from app.models.locations import Location
     from app.models.messages import Message
 
 
@@ -131,7 +132,11 @@ class Event(_EventBaseStrict, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     picture: str = Field(default="default_event_pic.png")
 
-    location: Optional['Location'] = Relationship(
+    latlon: Optional['LatLon'] = Relationship(
+        back_populates="event",
+        sa_relationship_kwargs={'uselist': False})
+
+    address: Optional['Address'] = Relationship(
         back_populates="event",
         sa_relationship_kwargs={'uselist': False})
 

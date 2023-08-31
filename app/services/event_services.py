@@ -13,7 +13,9 @@ from sqlmodel import Session
 
 from app.configs.settings import StaticSettings
 from app.dao.event_dao import EventDao
+from app.models.addresses import Address, AddressCreate
 from app.models.events import Event, EventUpdate, EventCreate
+from app.utils.geoloc_utils import get_latlon_from_address
 from app.utils.picture_utils import create_picture_name
 
 
@@ -34,7 +36,9 @@ class EventService:
     def __init__(self, session: Session):
         self.session = session
 
-    def create_event(self, event: EventCreate) -> Event:
+    def create_event(self,
+                     event: EventCreate,
+                     address: AddressCreate) -> Event:
         """Create a frienship in database.
 
         Parameters
@@ -48,12 +52,30 @@ class EventService:
             The event created.
         """
         new_event = Event.parse_obj(event)
+        new_event.address = Address.parse_obj(address)
+        new_event.latlon = get_latlon_from_address(address)
         db_event = EventDao(self.session).create_event(new_event)
         try:
             os.mkdir(path=f"{StaticSettings().events_dir}/event_{db_event.id}")
         except FileExistsError:
             pass
         return db_event
+
+    def read_event(self,
+                   event_id: int) -> Event:
+        """Read a single event.
+
+        Parameters
+        ----------
+        event_id : int
+            The id of the event to read.
+
+        Returns
+        -------
+        Event
+            The event that was read.
+        """
+        return EventDao(self.session).read_event(event_id)
 
     def update_event(self,
                      event_id: int,

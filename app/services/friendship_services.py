@@ -60,6 +60,7 @@ class FriendshipService:
             shared_events,
             key=lambda x: EventDao(self.session).read_event(
                 x.event_id).start_time, reverse=True)[0]
+        # TODO avoid the lambda for typing reasons, define the function smh
         friendship = Friendship(invite_sender_id=sender_id,
                                 invite_receiver_id=receiver_id,
                                 date=dt.today(),
@@ -92,7 +93,7 @@ class FriendshipService:
     def update_friendship_status(self,
                                  sender_id: int,
                                  receiver_id: int,
-                                 new_status: bool) -> Friendship:
+                                 new_status: FriendshipStatus) -> Friendship:
         """Update a friendship status.
 
         Parameters

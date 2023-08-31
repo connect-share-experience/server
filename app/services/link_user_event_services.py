@@ -155,7 +155,7 @@ class UserEventLinkService:
         if link.status == UserEventStatus.CREATOR:
             return True
         return False
-    
+
     def find_shared_events(self,
                            user_id1: int,
                            user_id2: int) -> List[UserEventLink]:
@@ -177,7 +177,7 @@ class UserEventLinkService:
         events1 = UserEventLinkDao(self.session).read_all_user_events(user_id1)
         # Find all events for the second user
         events2 = UserEventLinkDao(self.session).read_all_user_events(user_id2)
-        shared_events = list()
+        shared_events: List[UserEventLink] = []
         # Find the intersection of both event lists
         for event1 in events1:
             for event2 in events2:

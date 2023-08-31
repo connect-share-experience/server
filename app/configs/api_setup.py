@@ -12,6 +12,7 @@ from app.configs.settings import StaticSettings
 from app.routers import (authentication_router,
                          user_router,
                          friendship_router,
+                         event_base_router,
                          event_participant_router,
                          event_creator_router)
 
@@ -79,7 +80,7 @@ def on_startup():
 app.include_router(authentication_router.router, tags=[Tags.AUTH])
 app.include_router(user_router.router, tags=[Tags.USER])
 app.include_router(friendship_router.router, tags=[Tags.FRIEND])
-# app.include_router(event_router.router, tags=[Tags.EVENT])
+app.include_router(event_base_router.router, tags=["Event"])
 app.include_router(event_participant_router.router, tags=[Tags.EVENT_PART])
 app.include_router(event_creator_router.router, tags=[Tags.EVENT_CRE])
 

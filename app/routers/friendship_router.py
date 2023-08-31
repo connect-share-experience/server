@@ -19,6 +19,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
 
 from app.configs.api_dependencies import get_current_user, get_session
+from app.models.enums import FriendshipStatus
 from app.models.users import User, UserRead
 from app.services.friendship_services import FriendshipService
 
@@ -58,10 +59,10 @@ def accept_invite(*,
     - **token** : usual authentication header token.
     - **user_id** : the id of the user whose invite to accept.
     """
-    friendship = (FriendshipService(session)
-                  .update_friendship_status(user_id,
-                                            current_user.id,
-                                            new_status=True))
+    friendship = (FriendshipService(session).update_friendship_status(
+        user_id,
+        current_user.id,
+        new_status=FriendshipStatus.ACCEPTED))
     return friendship.invite_sender
 
 

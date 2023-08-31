@@ -1,4 +1,4 @@
-"""This module implements API endpoints handling authentication operations.
+"""This module implements API endpoints handling event operations.
 
 All functions need for the current user to be the creator of the event.
 

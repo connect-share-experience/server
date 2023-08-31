@@ -17,7 +17,8 @@ from app.configs.settings import DBSettings
 from app.models.events import Event  # noqa: F401
 from app.models.users import User  # noqa: F401
 from app.models.links import Friendship, UserEventLink  # noqa: F401
-from app.models.locations import Location  # noqa: F401
+from app.models.latitudes_longitudes import LatLon  # noqa: F401
+from app.models.addresses import Address  # noqa: F401
 from app.models.messages import Message  # noqa: F401
 
 
