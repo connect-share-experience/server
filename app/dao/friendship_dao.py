@@ -51,9 +51,17 @@ class FriendshipDao:
         Friendship
             The friendship created.
         """
-        # TODO Ensure that the reverse friendship doesn't yet exist.
+        temp = friendship.read_friendship(friendship.invite_receiver_id,
+                                          friendship.invite_sender_id)
+        friendship_read = temp.one_or_none()
+        if friendship_read is not None:
+            raise HTTPException(status_code=401,
+                                detail="Friendship already exists.")
+
         self.session.add(friendship)
         self.session.commit()
+        # TODO : forbid user1 to send a new invite to user2 if user2 has
+        # already sent an invite to user1
         return friendship
 
     def read_friendship(self,
