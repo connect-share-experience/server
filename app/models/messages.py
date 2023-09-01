@@ -8,7 +8,7 @@ Message(SQLModel)
 from datetime import datetime as dttime
 from typing import Optional, TYPE_CHECKING
 
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.enums import MessageCategory
 if TYPE_CHECKING:

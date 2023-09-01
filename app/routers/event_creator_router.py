@@ -22,6 +22,8 @@ delete_participant(event_id, user_id)
     Delete a participant from an event
 """
 from datetime import datetime as dttime
+from typing import List
+
 from fastapi import APIRouter, Depends, HTTPException, UploadFile
 from sqlmodel import Session
 
@@ -31,8 +33,8 @@ from app.models.events import EventRead, EventUpdate
 from app.models.messages import Message
 from app.models.users import User, UserRead
 from app.services.event_services import EventService
-from app.services.message_services import MessageService
 from app.services.link_user_event_services import UserEventLinkService
+from app.services.message_services import MessageService
 
 router = APIRouter(prefix="/event_creator")
 
@@ -244,5 +246,24 @@ def delete_participant(*,
         raise HTTPException(
             status_code=401,
             detail="Cannot delete a user that wasn't a participant yet.")
+    raise HTTPException(status_code=401,
+                        detail="Only creator of the event is authorized.")
+
+
+@router.get(path="/read_requests/{event_id}",
+            response_model=List[User],
+            response_description="Users that asked to join the event.",
+            summary="Read all users that asked to join the event")
+def read_requests(*,
+                  current_user: User = Depends(get_current_user),
+                  session: Session = Depends(get_session),
+                  event_id: int):
+    """Read all users that asked to join the event.
+
+    - **token**: usual authentication token.
+    - **event_id**: the id of the event to look for.
+    """
+    if UserEventLinkService(session).is_creator(current_user.id, event_id):
+        return UserEventLinkService(session).read_requests(event_id)
     raise HTTPException(status_code=401,
                         detail="Only creator of the event is authorized.")

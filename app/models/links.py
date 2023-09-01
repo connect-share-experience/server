@@ -7,12 +7,12 @@ Friendship(SQLModel, table=True)
 """
 from datetime import date as dt
 from typing import Optional
-from sqlmodel import SQLModel, Field, Relationship
 
-from app.models.enums import UserEventStatus, FriendshipStatus
+from sqlmodel import Field, Relationship, SQLModel
 
-from app.models.users import User
+from app.models.enums import FriendshipStatus, UserEventStatus
 from app.models.events import Event
+from app.models.users import User
 
 
 class Friendship(SQLModel, table=True):

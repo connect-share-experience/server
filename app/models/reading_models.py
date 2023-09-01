@@ -14,8 +14,8 @@ EventCreateWithAddress
 """
 from typing import Optional
 
-from app.models.events import EventRead, EventCreate
-from app.models.addresses import AddressRead, AddressCreate
+from app.models.addresses import AddressCreate, AddressRead
+from app.models.events import EventCreate, EventRead
 from app.models.latitudes_longitudes import LatLonRead
 
 

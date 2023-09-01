@@ -1,6 +1,7 @@
 """Functions related to authentication by token"""
-from typing import Any, Optional
 from datetime import datetime, timedelta
+from typing import Any, Optional
+
 from jose import jwt, JWTError
 
 from app.configs.settings import AuthSettings
