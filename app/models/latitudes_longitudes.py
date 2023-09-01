@@ -7,7 +7,7 @@ LatLon(SQLModel, table=True)
 """
 from typing import Optional, TYPE_CHECKING
 
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
     from app.models.events import Event

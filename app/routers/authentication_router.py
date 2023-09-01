@@ -21,8 +21,8 @@ from app.models.tokens import Token, TokenData
 from app.models.users import UserCreate, UserRead
 from app.services.auth_services import AuthService
 from app.services.user_services import UserService
-from app.utils.verify_code_utils import create_verify_code, send_verify_code
 from app.utils.token_utils import create_access_token
+from app.utils.verify_code_utils import create_verify_code, send_verify_code
 
 router = APIRouter()
 

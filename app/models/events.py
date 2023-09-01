@@ -14,7 +14,7 @@ Event(SQLModel, table=True)
 from datetime import datetime as dttime
 from typing import List, Optional, TYPE_CHECKING
 
-from sqlmodel import SQLModel, Field, Relationship
+from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.enums import EventCategory
 if TYPE_CHECKING:

@@ -184,3 +184,14 @@ class EventDao:
             self.session.commit()
             self.session.refresh(old_event)
         return old_event
+
+    def read_all_events(self) -> List[Event]:
+        """Read all events in table.
+
+        Returns
+        -------
+        List[Event]
+            All events in table.
+        """
+        events = self.session.exec(select(Event)).all()
+        return events

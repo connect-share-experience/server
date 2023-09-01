@@ -5,8 +5,8 @@ Functions
 check_valid_phone(value)
     Verify that the input value is a valid phone number.
 """
-import phonenumbers as pn
 from fastapi import HTTPException
+import phonenumbers as pn
 
 
 def check_valid_phone(value: str) -> str:

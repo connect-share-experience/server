@@ -5,17 +5,22 @@ Classes
 EventService
     Intermediate services for events.
 """
+from datetime import datetime as dttime
+from typing import List
 import os
 import shutil
 
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile
 from sqlmodel import Session
 
 from app.configs.settings import StaticSettings
 from app.dao.event_dao import EventDao
 from app.models.addresses import Address, AddressCreate
-from app.models.events import Event, EventUpdate, EventCreate
-from app.utils.geoloc_utils import get_latlon_from_address
+from app.models.events import Event, EventCreate, EventUpdate
+from app.models.latitudes_longitudes import LatLon, LatLonRead
+from app.utils.geoloc_utils import (get_latlon_from_address,
+                                    get_random_latlon,
+                                    is_within_radius)
 from app.utils.picture_utils import create_picture_name
 
 
@@ -61,8 +66,7 @@ class EventService:
             pass
         return db_event
 
-    def read_event(self,
-                   event_id: int) -> Event:
+    def read_event(self, event_id: int) -> Event:
         """Read a single event.
 
         Parameters
@@ -76,6 +80,32 @@ class EventService:
             The event that was read.
         """
         return EventDao(self.session).read_event(event_id)
+
+    def read_event_approx(self, event_id: int) -> Event:
+        """Read an event with approximate coordinates.
+
+        Parameters
+        ----------
+        event_id : int
+            The id of the event to read.
+
+        Returns
+        -------
+        Event
+            The event that was read.
+
+        Raises
+        ------
+        HTTPException
+            Raised when the event has no coordinates.
+        """
+        event = EventDao(self.session).read_event(event_id)
+        if event.latlon is None:
+            raise HTTPException(status_code=421,
+                                detail="Event does not have coordinates")
+        new_latlon = get_random_latlon(event.latlon)
+        event.latlon = new_latlon
+        return event
 
     def update_event(self,
                      event_id: int,
@@ -139,3 +169,32 @@ class EventService:
         picture.file.close()
 
         return event
+
+    def read_events_to_come_in_area(self,
+                                    latlon: LatLonRead,
+                                    radius: int) -> List[Event]:
+        """Read all events to come within radius arount coordinates.
+
+        Parameters
+        ----------
+        latlon : LatLonRead
+            The coordinates around which to search.
+        radius : int
+            The radius in which to search.
+
+        Returns
+        -------
+        List[Event]
+            The read events.
+        """
+        events = EventDao(self.session).read_all_events()
+        wanted_events: List[Event] = []
+        for event in events:
+            full_latlon = LatLon.parse_obj(latlon)
+            if event.latlon is None:
+                raise HTTPException(status_code=421,
+                                    detail="Event has no coordinates.")
+            verify = is_within_radius(full_latlon, event.latlon, radius)
+            if event.start_time > dttime.now() and verify is True:
+                wanted_events.append(event)
+        return wanted_events

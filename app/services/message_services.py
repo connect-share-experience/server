@@ -5,9 +5,9 @@ Classes
 MessageService
     Intermediate services for messages.
 """
-import shutil
 from datetime import datetime as dttime
 from typing import List
+import shutil
 
 from fastapi import UploadFile
 from sqlmodel import Session

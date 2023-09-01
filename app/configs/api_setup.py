@@ -10,11 +10,11 @@ from fastapi.staticfiles import StaticFiles
 from app.configs.database_setup import create_db_and_tables
 from app.configs.settings import StaticSettings
 from app.routers import (authentication_router,
-                         user_router,
-                         friendship_router,
                          event_base_router,
+                         event_creator_router,
                          event_participant_router,
-                         event_creator_router)
+                         friendship_router,
+                         user_router)
 
 
 class Tags(Enum):
@@ -24,6 +24,7 @@ class Tags(Enum):
     FRIEND = "Friendship"
     EVENT_PART = "Event Participant"
     EVENT_CRE = "Event Creator"
+    EVENT = "Event Base"
 
 
 tags_metadata = [
@@ -39,6 +40,11 @@ tags_metadata = [
         "name": Tags.FRIEND.value,
         "description": """Operations related to friendship creation,
                           modification and deletion."""
+    },
+    {
+        "name": Tags.EVENT.value,
+        "description": """Operations related to events and accessible to every
+                          authenticated user."""
     },
     {
         "name": Tags.EVENT_PART.value,
@@ -80,7 +86,7 @@ def on_startup():
 app.include_router(authentication_router.router, tags=[Tags.AUTH])
 app.include_router(user_router.router, tags=[Tags.USER])
 app.include_router(friendship_router.router, tags=[Tags.FRIEND])
-app.include_router(event_base_router.router, tags=["Event"])
+app.include_router(event_base_router.router, tags=[Tags.EVENT])
 app.include_router(event_participant_router.router, tags=[Tags.EVENT_PART])
 app.include_router(event_creator_router.router, tags=[Tags.EVENT_CRE])
 

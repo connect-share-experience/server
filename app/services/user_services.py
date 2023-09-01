@@ -5,8 +5,8 @@ Classes
 UserService
     Intermediate services for users.
 """
-import shutil
 from typing import List
+import shutil
 
 from fastapi import UploadFile
 from sqlmodel import Session

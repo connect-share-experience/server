@@ -1,7 +1,7 @@
 """This module contains methods to handle verification codes.
 
-Classes
--------
+Functions
+---------
 create_verify_code()
     Create a randomly generated verification code.
 send_verify_code()

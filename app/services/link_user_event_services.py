@@ -184,3 +184,23 @@ class UserEventLinkService:
                 if event1.event_id == event2.event_id:
                     shared_events.append(event1)
         return shared_events
+
+    def read_requests(self, event_id: int) -> List[User]:
+        """Read all users that asked to join the event.
+
+        Parameters
+        ----------
+        event_id : int
+            The id of the event to look for.
+
+        Returns
+        -------
+        List[User]
+            The users that asked to join the event.
+        """
+        links = UserEventLinkDao(self.session).read_all_event_users(event_id)
+        users: List[User] = []
+        for link in links:
+            if link.status == UserEventStatus.PENDING:
+                users.append(link.user)
+        return users
