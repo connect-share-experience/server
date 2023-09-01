@@ -126,7 +126,7 @@ class Event(_EventBaseStrict, table=True):
     location: Optional[Location]
         The location of the event.
     user_links: List["UserEventLink"]
-        The links betwenn the event and the users, whether they created,
+        The links between the event and the users, whether they created,
         requested of attended it.
     """
     id: Optional[int] = Field(default=None, primary_key=True)
