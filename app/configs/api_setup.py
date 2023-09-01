@@ -42,6 +42,11 @@ tags_metadata = [
                           modification and deletion."""
     },
     {
+        "name": Tags.EVENT.value,
+        "description": """Operations related to events and accessible to every
+                          authenticated user."""
+    },
+    {
         "name": Tags.EVENT_PART.value,
         "description": """Operations related to events and only accessible
                           to users that take part in that event."""
@@ -50,11 +55,6 @@ tags_metadata = [
         "name": Tags.EVENT_CRE.value,
         "description": """Operations related to events and only accessible to
                           users that created that event."""
-    },
-    {
-        "name": Tags.EVENT.value,
-        "description": """Operations related to events and accessible to every
-                          authenticated user."""
     }
 ]
 
