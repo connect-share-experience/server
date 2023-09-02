@@ -8,8 +8,9 @@ Scores(SQLModel, table=True)
 """
 
 from typing import Optional
-from app.models.users import User
 from sqlmodel import SQLModel, Field, Relationship
+
+from app.models.users import User
 
 
 class _ScoreBase(SQLModel):
