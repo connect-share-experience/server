@@ -1,17 +1,18 @@
 """This module implements all the models used for the creation and the storage
-of ranks.
+of scores.
 
 Classes
 -------
-Ranks(SQLModel, table=True)
-    Ranks of users per category of events.
+Scores(SQLModel, table=True)
+    Scores of users per category of events.
 """
 
 from typing import Optional
-from sqlmodel import SQLModel  # , Field, Relationship
+from app.models.users import User
+from sqlmodel import SQLModel, Field, Relationship
 
 
-class _RankBase(SQLModel):
+class _ScoreBase(SQLModel):
     '''Base model for all score models.
 
     This contains the attributes that are common to each score model.
@@ -22,15 +23,15 @@ class _RankBase(SQLModel):
     score: Optional[int]
 
 
-class _RankBaseStrict(_RankBase):
-    '''Similar to _RankBase, but with stricter restrictions.'''
+class _ScoreBaseStrict(_ScoreBase):
+    '''Similar to _ScoreBase, but with stricter restrictions.'''
     user_id: int
     category_id: int
     score: int
 
 
-class RankCreate(_RankBaseStrict):
-    '''Model for creating ranks.
+class ScoreCreate(_ScoreBaseStrict):
+    '''Model for creating scores.
 
     Attributes
     ----------
@@ -43,8 +44,8 @@ class RankCreate(_RankBaseStrict):
     '''
 
 
-class RankUpdate(_RankBase):
-    '''Model for updating ranks.
+class ScoreUpdate(_ScoreBase):
+    '''Model for updating scores.
 
     Attributes
     ----------
@@ -57,8 +58,8 @@ class RankUpdate(_RankBase):
     '''
 
 
-class RankRead(_RankBase):
-    '''Model for reading ranks.
+class ScoreRead(_ScoreBase):
+    '''Model for reading scores.
 
     Attributes
     ----------
@@ -71,8 +72,8 @@ class RankRead(_RankBase):
     '''
 
 
-class Score(_RankBaseStrict, table=True):
-    '''Model for reading ranks.
+class Score(_ScoreBaseStrict, table=True):
+    '''Model for reading scores.
 
     Attributes
     ----------
@@ -83,3 +84,7 @@ class Score(_RankBaseStrict, table=True):
     score: int
         score of the user in the category.
     '''
+    user_id: int = Field(default=None, foreign_key="user.id", primary_key=True)
+    category_id: int = Field(default=None, primary_key=True)
+    score: int
+    user: "User" = Relationship(back_populates="scores")

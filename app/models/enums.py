@@ -48,7 +48,7 @@ class EventCategory(_StrEnum):
     """This Enum class lists the different possible types of events."""
     PARTY = "party"
     SPORTS = "sports"
-    CULTURE = "culture"
+    CULTURE = "art/culture"
     MOVIES = "movies"
     GAMING = "gaming"
     OTHER = "other"

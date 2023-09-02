@@ -17,6 +17,7 @@ from typing import List, Optional, TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.enums import EventCategory
+from app.models.ranking_parameters import RankingParameters
 if TYPE_CHECKING:
     from app.models.addresses import Address
     from app.models.latitudes_longitudes import LatLon
@@ -143,3 +144,5 @@ class Event(_EventBaseStrict, table=True):
     user_links: List["UserEventLink"] = Relationship(back_populates="event")
 
     messages: List["Message"] = Relationship(back_populates="event")
+    ranking_parameters: List["RankingParameters"] = Relationship(
+                                                        back_populates="event")

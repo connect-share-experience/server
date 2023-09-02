@@ -21,6 +21,8 @@ from pydantic import validator
 from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 from app.models.messages import Message
+from app.models.scores import Score
+from app.models.ranking_parameters import RankingParameters
 from app.utils.regex_utils import CITY_REGEX, NAME_REGEX
 from app.utils.validators import check_valid_phone
 if TYPE_CHECKING:
@@ -201,3 +203,6 @@ class User(_UserBaseStrict, table=True):
         back_populates="invite_receiver",
         sa_relationship_kwargs={
             "foreign_keys": "Friendship.invite_receiver_id"})
+    scores: List["Score"] = Relationship(back_populates="user")
+    ranking_parameters: List["RankingParameters"] = Relationship(
+                                                        back_populates="user")
