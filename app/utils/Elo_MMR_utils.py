@@ -78,7 +78,7 @@ def generate_encounter_matrix(
                     matrix[i][j] = "FR_SEND"
                     matrix[j][i] = "FR_IGNORED"
                 elif status == FriendshipStatus.ACCEPTED:
-                    matrix[i][j] = "FR_ACCEPTED"
+                    matrix[i][j] = "FR_SEND"
                     matrix[j][i] = "FR_ACCEPTED"
                 elif status == FriendshipStatus.DENIED:
                     matrix[i][j] = "FR_SEND"

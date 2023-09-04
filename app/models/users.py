@@ -21,12 +21,12 @@ from pydantic import validator
 from sqlmodel import Field, Relationship, SQLModel, UniqueConstraint
 
 from app.models.messages import Message
-from app.models.scores import Score
-from app.models.ranking_parameters import RankingParameters
 from app.utils.regex_utils import CITY_REGEX, NAME_REGEX
 from app.utils.validators import check_valid_phone
 if TYPE_CHECKING:
     from app.models.links import UserEventLink, Friendship
+    from app.models.scores import Score
+    from app.models.ranking_parameters import RankingParameters
 
 
 class _UserBase(SQLModel):

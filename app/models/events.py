@@ -17,12 +17,13 @@ from typing import List, Optional, TYPE_CHECKING
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.enums import EventCategory
-from app.models.ranking_parameters import RankingParameters
+
 if TYPE_CHECKING:
     from app.models.addresses import Address
     from app.models.latitudes_longitudes import LatLon
     from app.models.links import UserEventLink
     from app.models.messages import Message
+    from app.models.ranking_parameters import RankingParameters
 
 
 class _EventBase(SQLModel):

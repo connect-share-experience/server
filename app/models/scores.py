@@ -9,7 +9,6 @@ Scores(SQLModel, table=True)
 
 from typing import Optional
 from sqlmodel import SQLModel, Field, Relationship
-
 from app.models.users import User
 
 
