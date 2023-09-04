@@ -42,6 +42,7 @@ class FriendshipStatus(_StrEnum):
     PENDING = "pending"
     ACCEPTED = "accepted"
     DENIED = "denied"
+    REPORT = "report"
 
 
 class EventCategory(_StrEnum):

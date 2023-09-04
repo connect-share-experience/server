@@ -116,6 +116,31 @@ class FriendshipService:
         return (FriendshipDao(self.session)
                 .update_friendship_status(sender_id, receiver_id, new_status))
 
+    def read_friendship(self,
+                        sender_id: int,
+                        receiver_id: int) -> Friendship:
+        """Read a single friendship.
+
+        Parameters
+        ----------
+        sender_id : int
+            The id of the user that sent the invite.
+        receiver_id : int
+            The id of the user that received the invite.
+
+        Returns
+        -------
+        Friendship
+            The friendship that was read.
+
+        Raises
+        ------
+        HTTPException
+            Raised when no such friendship was found.
+        """
+        return FriendshipDao(self.session).read_friendship(sender_id,
+                                                           receiver_id)
+
     def delete_friendship(self,
                           sender_id: int,
                           receiver_id: int) -> Friendship:

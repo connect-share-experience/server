@@ -27,6 +27,7 @@ class _RankingParametersBase(SQLModel):
     category: Optional[EventCategory]
     p: Optional[float]
     w: Optional[float]
+    mu: Optional[float]
 
 
 class _RankingParametersBaseStrict(_RankingParametersBase):
@@ -36,6 +37,7 @@ class _RankingParametersBaseStrict(_RankingParametersBase):
     category: EventCategory
     p: float
     w: float
+    mu: float
 
 
 class RankingParametersCreate(_RankingParametersBaseStrict):
@@ -61,7 +63,7 @@ class RankingParameters(_RankingParametersBaseStrict, table=True):
     category: EventCategory = Field(default=None, primary_key=True)
     p: float
     w: float
-
+    mu: float
     # Relationships
     user: "User" = Relationship(back_populates="ranking_parameters")
     event: "Event" = Relationship(back_populates="ranking_parameters")
