@@ -19,6 +19,9 @@ from app.models.events import Event  # noqa: F401
 from app.models.latitudes_longitudes import LatLon  # noqa: F401
 from app.models.links import Friendship, UserEventLink  # noqa: F401
 from app.models.messages import Message  # noqa: F401
+from app.models.ranking_info import RankingInfo  # noqa: F401
+from app.models.ranking_parameters import RankingParameters  # noqa: F401
+from app.models.scores import Score  # noqa: F401
 from app.models.users import User  # noqa: F401
 
 
