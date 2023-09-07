@@ -47,7 +47,6 @@ async def register(*,
              summary="Send the verification code.",
              response_description="The message when the code is sent.")
 async def get_verify_code(*,
-                          session: Session = Depends(get_session),
                           data: TokenData):
     """
     Log in the app to have it send the verification token.
