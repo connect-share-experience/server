@@ -6,8 +6,6 @@ client = Client(ExtResourcesSettings().account_sid,
 
 
 def send_sms(phone_number: str) -> str:
-    client = Client(ExtResourcesSettings().account_sid,
-                    ExtResourcesSettings().auth_token)
     """Send an SMS message.
 
     Parameters

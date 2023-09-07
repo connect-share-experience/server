@@ -6,7 +6,14 @@ create_verify_code()
     Create a randomly generated verification code.
 send_verify_code()
     Send the verification code to the user.
+check_verify_code(phone_number)
+    check if the verification code provided by the user is correct
 """
+from twilio.rest import Client
+from app.configs.settings import ExtResourcesSettings
+
+client = Client(ExtResourcesSettings().account_sid,
+                ExtResourcesSettings().auth_token)
 
 
 def create_verify_code() -> str:
@@ -20,12 +27,44 @@ def create_verify_code() -> str:
     return "1941"
 
 
-def send_verify_code() -> bool:
-    """Send the verification code to the user.
+def send_verify_code(phone_number: str) -> str:
+    """Send an SMS message.
+
+    Parameters
+    ----------
+    phone_number : str
+        The phone number to send the message to.
+    message : str
+        The message to send.
 
     Returns
     -------
-    bool
-        True if code was sent.
+        verification.status : str
+            The status of the verification.
     """
-    return True
+    verification = client.verify \
+        .services(ExtResourcesSettings().service_sid) \
+        .verifications \
+        .create(to=phone_number, channel='sms')
+    return verification.status
+
+
+def check_verify_code(phone_number: str, code: str) -> str:
+    """Check the SMS code.
+
+    Args:
+        phone_number : str
+            The phone number to send the message to.
+        code : str
+            The code to check.
+
+    Returns:
+        verification_check.status : str
+            The status of the verification check.
+    """
+    verification_check = client.verify \
+        .services(ExtResourcesSettings().service_sid) \
+        .verification_checks \
+        .create(to=phone_number, code=code)
+
+    return verification_check.status

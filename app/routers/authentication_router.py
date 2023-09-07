@@ -22,7 +22,7 @@ from app.models.users import UserCreate, UserRead
 from app.services.auth_services import AuthService
 from app.services.user_services import UserService
 from app.utils.token_utils import create_access_token
-from app.utils.verify_code_utils import create_verify_code, send_verify_code
+from app.utils.verify_code_utils import send_verify_code, check_verify_code
 
 router = APIRouter()
 
@@ -55,15 +55,12 @@ async def get_verify_code(*,
     - **body** : the data used to login. Model TokenData.
     """
     phone_number = data.phone
-    verify_code = create_verify_code()
-    AuthService(session).update_code(phone_number, verify_code)
-
-    sent = send_verify_code()
-    if sent is False:
+    status = send_verify_code(phone_number)
+    if status != "pending":
         raise HTTPException(status_code=500,
                             detail="Could not send verify code")
 
-    return {"message", "Verification code sent successfully."}
+    return {"message": "Verification code sent successfully."}
 
 
 @router.post(path="/token",
@@ -79,7 +76,8 @@ async def get_user_token(*,
     - **body**: The data to authenticate. Model Auth.
     """
     db_auth = AuthService(session).read_auth_by_phone(auth.phone)
-    if db_auth.verify_code != auth.verify_code:
+    status = check_verify_code(auth.phone, auth.verify_code)
+    if status != "approved":
         raise HTTPException(status_code=400,
                             detail="Invalid verification code.")
 
