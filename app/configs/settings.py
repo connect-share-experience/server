@@ -112,8 +112,15 @@ class ExtResourcesSettings(_BaseAppSettings):
     ----------
     gmaps_key: str
         Secret key for Google Maps API.
+    account_sid: str
+        Account SID for Twilio.
+    auth_token: str
+        Auth token for Twilio.
     """
     gmaps_key: str = Field(..., env="GOOGLE_MAPS_KEY")
+    account_sid: str = Field(..., env="TWILIO_ACCOUNT_SID")
+    auth_token: str = Field(..., env="TWILIO_AUTH_TOKEN")
+    service_sid: str = Field(..., env="TWILIO_SERVICE_SID")
 
 
 class StaticSettings(_BaseAppSettings):
