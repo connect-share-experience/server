@@ -178,7 +178,7 @@ class EventDao:
         if not old_event:
             raise HTTPException(status_code=404,
                                 detail=f"Event with id {event_id} not found")
-        if old_event.picture != "default_user_pic.png":
+        if old_event.picture == "default_user_pic.png":
             old_event.picture = picture_name
             self.session.add(old_event)
             self.session.commit()

@@ -46,7 +46,9 @@ def send_verify_code(phone_number: str) -> str:
         .services(ExtResourcesSettings().service_sid) \
         .verifications \
         .create(to=phone_number, channel='sms')
-    return verification.status
+    if isinstance(verification.status, str):
+        return verification.status
+    raise TypeError("Twilio verification status should be a string.")
 
 
 def check_verify_code(phone_number: str, code: str) -> str:
@@ -66,5 +68,6 @@ def check_verify_code(phone_number: str, code: str) -> str:
         .services(ExtResourcesSettings().service_sid) \
         .verification_checks \
         .create(to=phone_number, code=code)
-
-    return verification_check.status
+    if isinstance(verification_check.status, str):
+        return verification_check.status
+    raise TypeError("Twilio verification status should be a string.")

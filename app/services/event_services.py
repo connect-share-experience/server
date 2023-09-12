@@ -6,7 +6,7 @@ EventService
     Intermediate services for events.
 """
 from datetime import datetime as dttime
-from typing import List
+from typing import List, Optional
 import os
 import shutil
 
@@ -16,6 +16,7 @@ from sqlmodel import Session
 from app.configs.settings import StaticSettings
 from app.dao.event_dao import EventDao
 from app.models.addresses import Address, AddressCreate
+from app.models.enums import EventCategory
 from app.models.events import Event, EventCreate, EventUpdate
 from app.models.latitudes_longitudes import LatLon, LatLonRead
 from app.utils.geoloc_utils import (get_latlon_from_address,
@@ -170,9 +171,11 @@ class EventService:
 
         return event
 
-    def read_events_to_come_in_area(self,
-                                    latlon: LatLonRead,
-                                    radius: int) -> List[Event]:
+    def read_events_to_come_in_area(
+            self,
+            latlon: LatLonRead,
+            radius: int,
+            category: Optional[EventCategory]) -> List[Event]:
         """Read all events to come within radius arount coordinates.
 
         Parameters
@@ -187,14 +190,18 @@ class EventService:
         List[Event]
             The read events.
         """
+        # TODO Check whether that shit works
         events = EventDao(self.session).read_all_events()
         wanted_events: List[Event] = []
+        full_latlon = LatLon.parse_obj(latlon)
+
         for event in events:
-            full_latlon = LatLon.parse_obj(latlon)
             if event.latlon is None:
                 raise HTTPException(status_code=421,
                                     detail="Event has no coordinates.")
             verify = is_within_radius(full_latlon, event.latlon, radius)
             if event.start_time > dttime.now() and verify is True:
-                wanted_events.append(event)
+                if category is None or event.category == category:
+                    event.latlon = get_random_latlon(event.latlon)
+                    wanted_events.append(event)
         return wanted_events
