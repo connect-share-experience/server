@@ -10,6 +10,7 @@ check_verify_code(phone_number)
     check if the verification code provided by the user is correct
 """
 from twilio.rest import Client
+import phonenumbers
 from app.configs.settings import ExtResourcesSettings
 
 client = Client(ExtResourcesSettings().account_sid,
@@ -27,7 +28,7 @@ def create_verify_code() -> str:
     return "1941"
 
 
-def send_verify_code(phone_number: str) -> str:
+def send_verify_code(phone_number: str, country: str = None) -> str:
     """Send an SMS message.
 
     Parameters
@@ -42,6 +43,10 @@ def send_verify_code(phone_number: str) -> str:
         verification.status : str
             The status of the verification.
     """
+    phone_number = phonenumbers.format_number(
+        phonenumbers.parse(phone_number, country),
+        phonenumbers.PhoneNumberFormat.INTERNATIONAL
+        )
     verification = client.verify \
         .services(ExtResourcesSettings().service_sid) \
         .verifications \
@@ -49,7 +54,7 @@ def send_verify_code(phone_number: str) -> str:
     return verification.status
 
 
-def check_verify_code(phone_number: str, code: str) -> str:
+def check_verify_code(phone_number: str, country: str, code: str) -> str:
     """Check the SMS code.
 
     Args:
