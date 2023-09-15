@@ -13,6 +13,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlmodel import Session
+from twilio.base.exceptions import TwilioRestException
 
 from app.configs.api_dependencies import get_session
 from app.configs.settings import AuthSettings
@@ -47,6 +48,7 @@ async def register(*,
              summary="Send the verification code.",
              response_description="The message when the code is sent.")
 async def get_verify_code(*,
+                          session: Session = Depends(get_session),
                           data: TokenData):
     """
     Log in the app to have it send the verification token.
@@ -54,12 +56,18 @@ async def get_verify_code(*,
     - **body** : the data used to login. Model TokenData.
     """
     phone_number = data.phone
-    status = send_verify_code(phone_number)
-    if status != "pending":
-        raise HTTPException(status_code=500,
-                            detail="Could not send verify code")
-
-    return {"message": "Verification code sent successfully."}
+    try:
+        auth = AuthService(session).read_auth_by_phone(phone_number)
+        status = send_verify_code(auth.phone)
+        if status != "pending":
+            raise HTTPException(status_code=500,
+                                detail="Could not send verify code")
+        return {"message": "Verification code sent successfully."}
+    except TwilioRestException as exc:
+        new_exc = HTTPException(
+            status_code=422,
+            detail="Phone number isn't correct format and cannot be processed")
+        raise new_exc from exc
 
 
 @router.post(path="/token",
@@ -75,6 +83,9 @@ async def get_user_token(*,
     - **body**: The data to authenticate. Model Auth.
     """
     db_auth = AuthService(session).read_auth_by_phone(auth.phone)
+    if auth.verify_code is None:
+        raise HTTPException(status_code=422,
+                            detail="Must provide a verification code.")
     status = check_verify_code(auth.phone, auth.verify_code)
     if status != "approved":
         raise HTTPException(status_code=400,

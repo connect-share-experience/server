@@ -10,11 +10,8 @@ RankingParameterDao(session)
 from typing import List, Optional
 from fastapi import HTTPException
 from sqlmodel import Session, select
-from app.models.ranking_parameters import (
-    RankingParameters,
-    RankingParametersCreate,
-    RankingParametersUpdate,
-)
+from app.models.ranking_parameters import (RankingParameters,
+                                           RankingParametersUpdate)
 from app.models.enums import EventCategory
 
 
@@ -56,12 +53,12 @@ class RankingParameterDao:
 
     def create_ranking_parameter(
          self,
-         ranking_parameter: RankingParametersCreate) -> RankingParameters:
+         ranking_parameter: RankingParameters) -> RankingParameters:
         """Create a new RankingParameters entry in the database.
 
         Parameters
         ----------
-        ranking_parameter : RankingParametersCreate
+        ranking_parameter : RankingParameters
             The ranking parameter to add to the database.
 
         Returns

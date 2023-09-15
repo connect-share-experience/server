@@ -7,14 +7,14 @@ create_event(event)
 read_event(event_id)
     Read an event with detailed location.
 """
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends
 from sqlmodel import Session
 
 from app.configs.api_dependencies import get_current_user, get_session
 from app.models.addresses import AddressCreate
-from app.models.enums import UserEventStatus
+from app.models.enums import UserEventStatus, EventCategory
 from app.models.events import EventCreate, EventRead
 from app.models.latitudes_longitudes import LatLonRead
 from app.models.links import UserEventLink
@@ -72,14 +72,17 @@ def read_events_in_radius(*,
                           _: User = Depends(get_current_user),
                           session: Session = Depends(get_session),
                           latlon: LatLonRead,
-                          radius: int):
+                          radius: int,
+                          category: Optional[EventCategory]):
     """Read all upcoming events in radius around coordinates.
 
     - **token**: usual authentication token
     - **latlon**: coordinates around which to look for events
     - **radius**: the radius in which to look for events
     """
-    return EventService(session).read_events_to_come_in_area(latlon, radius)
+    return EventService(session).read_events_to_come_in_area(latlon,
+                                                             radius,
+                                                             category)
 
 
 @router.get(path="/join/{event_id}",

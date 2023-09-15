@@ -9,6 +9,7 @@ from typing import List
 
 from fastapi import HTTPException
 from sqlmodel import Session, select
+from sqlalchemy.exc import IntegrityError
 
 from app.models.users import User, UserUpdate
 
@@ -50,10 +51,16 @@ class UserDao:
         User
             The created user.
         """
-        self.session.add(user)
-        self.session.commit()
-        self.session.refresh(user)
-        return user
+        try:
+            self.session.add(user)
+            self.session.commit()
+            self.session.refresh(user)
+            return user
+        except IntegrityError as exc:
+            new_exc = HTTPException(
+                status_code=403,
+                detail=f"User with phone number {user.phone} already exists.")
+            raise new_exc from exc
 
     def read_user(self, user_id: int) -> User:
         """Read a single user using its id.
@@ -206,7 +213,7 @@ class UserDao:
         if not old_user:
             raise HTTPException(status_code=404,
                                 detail=f"User with id {user_id} not found.")
-        if old_user.picture != "default_user_pic.png":
+        if old_user.picture == "default_user_pic.png":
             old_user.picture = picture_name
             self.session.add(old_user)
             self.session.commit()
