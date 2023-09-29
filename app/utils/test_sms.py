@@ -1,19 +1,10 @@
-"""This module contains methods to handle verification codes.
-
-Functions
----------
-create_verify_code()
-    Create a randomly generated verification code.
-send_verify_code()
-    Send the verification code to the user.
-check_verify_code(phone_number)
-    check if the verification code provided by the user is correct
-"""
 from twilio.rest import Client
-from app.configs.settings import ExtResourcesSettings
+phone = '+33661477529'
+account_sid = 'AC6d3dee87d0dd1a4b79c16e055ed71e7b'
+verify_sid = 'VA906e4335fa2838b5f60f6401c2bc5b29'
+auth_token = '7d7a08760571d5b7878c5b6ee325b1b8'
 
-client = Client(ExtResourcesSettings().account_sid,
-                ExtResourcesSettings().auth_token)
+client = Client(account_sid, auth_token)
 
 
 def create_verify_code() -> str:
@@ -44,7 +35,8 @@ def send_verify_code(phone_number: str) -> str:
     """
 
     verification = client.verify \
-        .services(ExtResourcesSettings().service_sid) \
+        .v2 \
+        .services('VA906e4335fa2838b5f60f6401c2bc5b29') \
         .verifications \
         .create(to=phone_number, channel='sms')
     if isinstance(verification.status, str):
@@ -66,9 +58,21 @@ def check_verify_code(phone_number: str, code: str) -> str:
             The status of the verification check.
     """
     verification_check = client.verify \
-        .services(ExtResourcesSettings().service_sid) \
+        .v2 \
+        .services(verify_sid) \
         .verification_checks \
         .create(to=phone_number, code=code)
     if isinstance(verification_check.status, str):
         return verification_check.status
     raise TypeError("Twilio verification status should be a string.")
+
+if __name__ == "__main__":
+    otp_verification = send_verify_code(phone)
+
+    print(otp_verification)
+
+    otp_code = input('Enter OTP: ')
+
+    otp_check = check_verify_code(phone, otp_code)
+
+    print(otp_check)
